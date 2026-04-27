@@ -1,0 +1,11 @@
+httpx[http2]
+tenacity
+pydantic
+pydantic-settings
+selectolax
+orjson
+aiocache
+aiofiles
+pillow
+lxml
+pathvalidate
