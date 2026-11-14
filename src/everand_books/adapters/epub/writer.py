@@ -8,10 +8,10 @@ from lxml import etree
 from pathvalidate import sanitize_filename
 
 from everand_books.adapters.epub.element import XmlElement
+from everand_books.adapters.epub.images import plan_images
 from everand_books.adapters.epub.layout import (
     CONTAINER_XML_PATH,
     CONTENT_OPF_PATH,
-    COVER_FILENAME,
     MIMETYPE_PATH,
     NAV_HREF,
     STYLESHEET_HREF,
@@ -48,13 +48,13 @@ def build_archive_entries(book: Book, modified: datetime) -> dict[str, bytes]:
         ),
         archive_path(STYLESHEET_HREF): render_stylesheet(book.stylesheet).encode(),
     }
+    images = plan_images(book)
     for chapter in book.chapters:
-        path = archive_path(chapter_href(chapter.nav.chapter_id))
-        entries[path] = _xml(render_chapter(chapter), XHTML_DOCTYPE)
-        for image in chapter.images:
-            entries[archive_path(image_href(image.filename))] = image.content
-    if book.cover is not None:
-        entries[archive_path(image_href(COVER_FILENAME))] = book.cover
+        chapter_id = chapter.nav.chapter_id
+        document = render_chapter(chapter, images.names[chapter_id])
+        entries[archive_path(chapter_href(chapter_id))] = _xml(document, XHTML_DOCTYPE)
+    for filename, content in images.files.items():
+        entries[archive_path(image_href(filename))] = content
     return entries
 
 

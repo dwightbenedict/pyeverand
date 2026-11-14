@@ -45,7 +45,8 @@ A local command-line tool, not a hosted service, so the Render free-tier budget 
 - Chapters are serialised as XML (XHTML), not HTML, so void elements such as `<img>` are closed.
 - `frontmatter` / `bodymatter` / `backmatter` moved from the spine `properties` attribute, where they are not valid values, to `epub:type` on each chapter's `<body>`.
 - Manifest image ids are numbered (`image-1`, ...) because file names may start with a digit, which is not a valid XML id. ISBN identifiers are written as `urn:isbn:<isbn>`.
-- Images from all chapters still share one `Images/` folder, as before: two chapters using the same file name for different pictures would collide.
+- Images from all chapters share one `Images/` folder. When two chapters (or a chapter and the cover) use one file name for different pictures, the later one is stored as `<chapter-id>-<name>` and that chapter's links follow it (`adapters/epub/images.py`). Identical pictures are stored once.
+- Image links inside raw HTML blocks are pointed at the packaged file when its name matches a downloaded chapter image.
 
 ## HTTP behaviour
 - Retries cover connection errors and HTTP 429/500/502/503/504 only. Other 4xx answers fail at once instead of being retried.

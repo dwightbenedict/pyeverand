@@ -28,6 +28,7 @@ async def test_write_creates_epub_archive_named_after_the_title(book: Book, tmp_
             "META-INF/container.xml",
             "OEBPS/Images/9-fig.JPG",
             "OEBPS/Images/a.png",
+            "OEBPS/Images/chapter_2-cover.jpg",
             "OEBPS/Images/cover.jpg",
             "OEBPS/Styles/styles.css",
             "OEBPS/Text/chapter_1.xhtml",

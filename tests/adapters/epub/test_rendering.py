@@ -185,10 +185,23 @@ def test_render_chapter_builds_document_with_grouped_blocks() -> None:
         Chapter("One & Only", (bullet, bullet)),
     )
 
-    document = render_chapter(chapter)
+    document = render_chapter(chapter, {})
 
     head, body = document
     assert (tag(document), tags(head), tags(body)) == ("html", ["title", "link"], ["ol"])
     assert head[0].text == "One & Only"
     assert head[1].get("href") == "../Styles/styles.css"
     assert body.get(EPUB_TYPE) == "backmatter"
+
+
+def test_render_chapter_points_images_at_their_archive_names() -> None:
+    blocks = (
+        ImageBlock(type="image", src="images/fig.jpg"),
+        HTMLBlock(type="raw", data='<img src="images/raw.png"><img src="https://cdn/other.gif">'),
+    )
+    chapter = BookChapter(NavChapter("One", SectionKind.BODYMATTER, 0), Chapter("One", blocks))
+
+    document = render_chapter(chapter, {"fig.jpg": "chapter_1-fig.jpg", "raw.png": "raw.png"})
+
+    sources = [image.get("src") for image in document.iter("{http://www.w3.org/1999/xhtml}img")]
+    assert sources == ["../Images/chapter_1-fig.jpg", "../Images/raw.png", "https://cdn/other.gif"]

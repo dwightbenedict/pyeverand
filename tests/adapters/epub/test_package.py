@@ -74,6 +74,7 @@ def test_build_package_document_lists_each_file_once_with_valid_ids(book: Book) 
         "cover-image": ("Images/cover.jpg", "image/jpeg"),
         "image-1": ("Images/9-fig.JPG", "image/jpeg"),
         "image-2": ("Images/a.png", "image/png"),
+        "image-3": ("Images/chapter_2-cover.jpg", "image/jpeg"),
     }
     properties = {
         item.get("id"): item.get("properties")

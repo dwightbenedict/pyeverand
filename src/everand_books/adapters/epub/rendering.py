@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from functools import singledispatch
 
 from lxml import html as lxml_html
@@ -176,9 +177,18 @@ def render_inline_image(word: InlineImage) -> XmlElement:
     )
 
 
-def render_chapter(chapter: BookChapter) -> XmlElement:
+def _link_images(body: XmlElement, image_names: Mapping[str, str]) -> None:
+    # Covers images inside raw HTML blocks too, whose links still point at Everand's own paths.
+    for image in body.iter(f"{{{XHTML_NAMESPACE}}}img"):
+        filename = str(image.get("src", "")).rsplit("/", 1)[-1]
+        if filename in image_names:
+            image.set("src", image_href_from_chapter(image_names[filename]))
+
+
+def render_chapter(chapter: BookChapter, image_names: Mapping[str, str]) -> XmlElement:
     body = E.body(*(render(block) for block in normalize_blocks(chapter.chapter.blocks)))
     body.set(EPUB_TYPE, chapter.nav.kind.value)
+    _link_images(body, image_names)
     return E.html(
         E.head(
             E.title(chapter.chapter.title),

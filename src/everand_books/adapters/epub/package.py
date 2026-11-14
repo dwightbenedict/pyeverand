@@ -4,6 +4,7 @@ from pathlib import PurePosixPath
 from lxml.etree import Element, SubElement
 
 from everand_books.adapters.epub.element import XmlElement
+from everand_books.adapters.epub.images import plan_images
 from everand_books.adapters.epub.layout import (
     CONTENT_OPF_PATH,
     COVER_FILENAME,
@@ -49,9 +50,8 @@ def build_container_document() -> XmlElement:
     return container
 
 
-def image_filenames(book: Book) -> list[str]:
-    names = {image.filename for chapter in book.chapters for image in chapter.images}
-    return sorted(names - {COVER_FILENAME})
+def _content_images(book: Book) -> list[str]:
+    return sorted(set(plan_images(book).files) - {COVER_FILENAME})
 
 
 def _dc(metadata: XmlElement, tag: str, text: str) -> XmlElement:
@@ -117,7 +117,7 @@ def _add_manifest(package: XmlElement, book: Book) -> None:
         cover = add_item(COVER_ITEM_ID, image_href(COVER_FILENAME), "image/jpeg")
         cover.set("properties", "cover-image")
     # File names can start with a digit, which is not a valid XML id, so ids are numbered.
-    for number, filename in enumerate(image_filenames(book), start=1):
+    for number, filename in enumerate(_content_images(book), start=1):
         add_item(f"image-{number}", image_href(filename), _image_media_type(filename))
 
 
