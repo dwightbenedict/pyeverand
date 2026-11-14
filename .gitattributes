@@ -1,0 +1,2 @@
+# Shell scripts and hooks run under WSL/Linux and break with CRLF, whatever core.autocrlf says.
+* text=auto eol=lf

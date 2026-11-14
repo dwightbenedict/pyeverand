@@ -1,0 +1,13 @@
+# Changes here will be overwritten by Copier. Do not edit by hand.
+_commit: v0.3.0
+_src_path: /mnt/c/Users/legion/PycharmProjects/templates
+adopt: true
+concurrency: async
+description: Download Everand books you can read and package them as EPUB files
+hosting: unconstrained
+interfaces:
+- cli
+kind: application
+language: python
+persistence: none
+project_name: everand-books
