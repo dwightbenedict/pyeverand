@@ -53,6 +53,7 @@ async def open_download_service() -> AsyncGenerator[DownloadBookService]:
         max_retry_delay=settings.http_max_retry_delay_seconds,
         max_concurrency=settings.http_max_concurrency,
     )
+
     async with _build_client(settings) as client:
         session = EverandSession(client, policy)
         tokens = AccessTokenProvider(session, settings.access_token_ttl_seconds)

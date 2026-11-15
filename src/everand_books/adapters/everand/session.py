@@ -44,9 +44,12 @@ class EverandSession:
         async with self._slots:
             for attempt in range(1, self._policy.max_attempts):
                 response = await self._attempt(request)
+
                 if response is not None:
                     return response
+
                 await self._sleep(min(2.0**attempt, self._policy.max_retry_delay))
+
             return await self._final_attempt(request)
 
     async def _attempt(self, request: httpx.Request) -> httpx.Response | None:
@@ -54,6 +57,7 @@ class EverandSession:
             response = await self._client.send(request)
         except httpx.RequestError:
             return None
+
         return None if response.status_code in RETRYABLE_STATUS_CODES else response
 
     async def _final_attempt(self, request: httpx.Request) -> httpx.Response:

@@ -9,6 +9,7 @@ def ensure_ok(response: httpx.Response) -> httpx.Response:
         request = response.request
         msg = f"{request.method} {request.url.path} returned HTTP {response.status_code}"
         raise EverandRequestError(msg)
+
     return response
 
 

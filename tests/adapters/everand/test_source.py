@@ -36,6 +36,7 @@ def make_source(make_session: SessionFactory) -> SourceFactory:
 
 async def test_fetch_metadata_missing_book_raises_not_found(make_source: SourceFactory) -> None:
     source = make_source({"/book/1": httpx.Response(404)})
+
     with pytest.raises(BookNotFoundError, match="Book with ID 1 not found"):
         await source.fetch_metadata("1")
 
@@ -44,12 +45,14 @@ async def test_fetch_metadata_server_refusal_raises_request_error(
     make_source: SourceFactory,
 ) -> None:
     source = make_source({"/book/1": httpx.Response(403)})
+
     with pytest.raises(EverandRequestError, match="GET /book/1 returned HTTP 403"):
         await source.fetch_metadata("1")
 
 
 async def test_fetch_metadata_parses_the_book_page(make_source: SourceFactory) -> None:
     source = make_source({"/book/1": httpx.Response(200, text="<html></html>")})
+
     with pytest.raises(BookNotAccessibleError):
         await source.fetch_metadata("1")
 
@@ -73,6 +76,7 @@ async def test_fetch_toc_maps_section_types(make_source: SourceFactory) -> None:
 
 async def test_fetch_toc_unexpected_shape_raises(make_source: SourceFactory) -> None:
     source = make_source({"/scepub/1/toc.json?token=tok": httpx.Response(200, json={"toc": []})})
+
     with pytest.raises(UnexpectedResponseError):
         await source.fetch_toc("1")
 

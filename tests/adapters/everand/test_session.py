@@ -21,8 +21,10 @@ class Script:
     def __call__(self, request: httpx.Request) -> httpx.Response:
         self.requests.append(request)
         outcome = self._outcomes.pop(0)
+
         if isinstance(outcome, Exception):
             raise outcome
+
         return httpx.Response(outcome)
 
 

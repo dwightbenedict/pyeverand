@@ -43,6 +43,7 @@ E = ElementMaker(
 def _styled(element: XmlElement, *declarations: str) -> XmlElement:
     if declarations:
         element.set("style", "; ".join(declarations))
+
     return element
 
 
@@ -80,8 +81,10 @@ def render_page_break(_block: PageBreakBlock) -> XmlElement:
 @render.register
 def render_image(block: ImageBlock) -> XmlElement:
     declarations = ["max-width: 100%", "height: auto"]
+
     if block.center:
         declarations += ["display: block", "margin-left: auto", "margin-right: auto"]
+
     image = E.img(src=image_href_from_chapter(block.filename), alt=block.alt)
     return E.div(_styled(image, *declarations))
 
@@ -89,45 +92,57 @@ def render_image(block: ImageBlock) -> XmlElement:
 @render.register
 def render_raw_html(block: HTMLBlock) -> XmlElement:
     section = E.section()
+
     for fragment in lxml_html.fragments_fromstring(block.data):
         # lxml returns text that precedes the first element as a leading string.
         if isinstance(fragment, str):
             section.text = fragment
             continue
+
         for element in fragment.iter("*"):
             element.tag = f"{{{XHTML_NAMESPACE}}}{element.tag}"
+
         section.append(fragment)
+
     return section
 
 
 def _text_tag(block: TextBlock) -> str:
     if block.size != "heading":
         return "p"
+
     level = 5 - (block.size_class or 1)
     return f"h{min(max(level, 1), SMALLEST_HEADING_LEVEL)}"
 
 
 def _text_declarations(block: TextBlock) -> list[str]:
     declarations: list[str] = []
+
     if block.align:
         declarations.append(f"text-align: {block.align}")
+
     if block.block_indent is not None:
         declarations.append(f"margin-left: {block.block_indent}em")
+
     if block.text_indent is not None:
         declarations.append(f"text-indent: {block.text_indent}em")
+
     if block.bg_color is not None:
         red, green, blue = block.bg_color
         declarations.append(f"background-color: rgb({red}, {green}, {blue})")
+
     return declarations
 
 
 @render.register
 def render_text(block: TextBlock) -> XmlElement:
     text = E(_text_tag(block))
+
     for word in block.words:
         rendered = render(word)
         rendered.tail = " "
         text.append(rendered)
+
     return _styled(text, *_text_declarations(block))
 
 
@@ -140,11 +155,15 @@ def render_list(block: ListBlock) -> XmlElement:
 @render.register
 def render_table(block: TableBlock) -> XmlElement:
     table = E.table()
+
     for row in block.rows:
         table_row = E.tr()
+
         for cell in row.cells:
             table_row.append(E.td(*(render(node) for node in cell.nodes), style=cell.style))
+
         table.append(table_row)
+
     return E.div(table)
 
 
@@ -182,6 +201,7 @@ def _link_images(body: XmlElement, image_names: Mapping[str, str]) -> None:
     # Covers images inside raw HTML blocks too, whose links still point at Everand's own paths.
     for image in body.iter(f"{{{XHTML_NAMESPACE}}}img"):
         filename = str(image.get("src", "")).rsplit("/", 1)[-1]
+
         if filename in image_names:
             image.set("src", image_href_from_chapter(image_names[filename]))
 

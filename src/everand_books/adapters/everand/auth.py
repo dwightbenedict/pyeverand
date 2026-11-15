@@ -46,8 +46,10 @@ class AccessTokenProvider:
     async def get_token(self, book_id: str) -> str:
         async with self._lock:
             cached = self._tokens.get(book_id)
+
             if cached is not None and cached.expires_at > self._clock():
                 return cached.value
+
             token = await self._fetch_access_token(book_id, await self._fetch_csrf_token())
             self._tokens[book_id] = _CachedToken(token, self._clock() + self._ttl_seconds)
             return token
@@ -55,9 +57,11 @@ class AccessTokenProvider:
     async def _fetch_csrf_token(self) -> str:
         response = ensure_ok(await self._session.post("/csrf_token"))
         csrf_token = parse_json(response.content, _CSRF).csrf_token
+
         if not csrf_token:
             msg = "Everand returned no CSRF token; the session cookies may be invalid or expired"
             raise UnexpectedResponseError(msg)
+
         return csrf_token
 
     async def _fetch_access_token(self, book_id: str, csrf_token: str) -> str:
@@ -67,7 +71,9 @@ class AccessTokenProvider:
             headers={"X-Tried-Csrf": "1", "X-Csrf-Token": csrf_token},
         )
         payload = parse_json(ensure_ok(response).content, _ACCESS_TOKEN)
+
         if not payload.response or payload.error:
             msg = f"Book {book_id} is not accessible. It may be private or removed."
             raise BookNotAccessibleError(msg)
+
         return payload.response

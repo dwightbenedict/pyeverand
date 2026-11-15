@@ -20,15 +20,22 @@ def plan_images(book: Book) -> ImagePlan:
     name for different pictures. The later one is then stored under a chapter-prefixed name.
     """
     files: dict[str, bytes] = {}
+
     if book.cover is not None:
         files[COVER_FILENAME] = book.cover
+
     names: dict[str, dict[str, str]] = {}
+
     for chapter in book.chapters:
         chapter_names = names.setdefault(chapter.nav.chapter_id, {})
+
         for image in chapter.images:
             name = image.filename
+
             if files.setdefault(name, image.content) != image.content:
                 name = f"{chapter.nav.chapter_id}-{image.filename}"
                 files[name] = image.content
+
             chapter_names[image.filename] = name
+
     return ImagePlan(files, names)

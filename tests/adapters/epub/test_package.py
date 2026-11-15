@@ -96,5 +96,6 @@ def test_build_package_document_unsupported_image_format_raises(book: Book) -> N
         Chapter("One", ()),
         (ImageFile("photo.webp", b""),),
     )
+
     with pytest.raises(UnsupportedImageFormatError, match=r"photo\.webp"):
         build_package_document(replace(book, chapters=(chapter,)), MODIFIED)

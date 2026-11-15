@@ -3,6 +3,7 @@ from collections.abc import Mapping
 
 def render_stylesheet(styles: Mapping[str, str]) -> str:
     rules: list[str] = []
+
     for class_name, declarations in styles.items():
         lines = [
             f"  {declaration.strip()};\n"
@@ -10,4 +11,5 @@ def render_stylesheet(styles: Mapping[str, str]) -> str:
             if declaration.strip()
         ]
         rules.append(f".{class_name} {{\n{''.join(lines)}}}\n")
+
     return "\n".join(rules)

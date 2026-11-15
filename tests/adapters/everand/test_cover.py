@@ -19,6 +19,7 @@ def test_cover_as_jpeg_jpeg_content_is_kept_as_is() -> None:
 
 def test_cover_as_jpeg_other_image_is_converted() -> None:
     converted = cover_as_jpeg(png(), "image/png")
+
     with Image.open(BytesIO(converted)) as image:
         assert image.format == "JPEG"
 

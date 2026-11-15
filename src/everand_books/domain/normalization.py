@@ -51,17 +51,23 @@ class _OpenList:
 
 def group_list_items(bullets: Iterable[TextBlock]) -> ListBlock | None:
     stack: list[_OpenList] = []
+
     for bullet in bullets:
         if stack and bullet.list_level <= stack[-1].level:
             # An item shallower than the first one stays in the outermost list.
             while len(stack) > 1 and stack[-1].level > bullet.list_level:
                 stack.pop()
+
             stack[-1].items.append(bullet)
             continue
+
         opened = _OpenList(bullet.list_level, [bullet])
+
         if stack:
             stack[-1].items.append(opened)
+
         stack.append(opened)
+
     return stack[0].close() if stack else None
 
 
@@ -96,8 +102,10 @@ class _Grouping:
 
 def normalize_blocks(blocks: Iterable[ChapterBlock]) -> list[NormalizedBlock]:
     grouping = _Grouping()
+
     for block in blocks:
         grouping.add(block)
+
     grouping.close_table()
     grouping.close_list()
     return grouping.normalized

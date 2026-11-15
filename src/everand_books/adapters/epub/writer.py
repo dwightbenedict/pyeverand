@@ -50,20 +50,25 @@ def build_archive_entries(book: Book, modified: datetime) -> dict[str, bytes]:
         archive_path(STYLESHEET_HREF): render_stylesheet(book.stylesheet).encode(),
     }
     images = plan_images(book)
+
     for chapter in book.chapters:
         chapter_id = chapter.nav.chapter_id
         document = render_chapter(chapter, images.names[chapter_id])
         entries[archive_path(chapter_href(chapter_id))] = _xml(document, XHTML_DOCTYPE)
+
     for filename, content in images.files.items():
         entries[archive_path(image_href(filename))] = content
+
     return entries
 
 
 def _write_archive(path: Path, entries: dict[str, bytes]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+
     with ZipFile(path, "w") as archive:
         # The EPUB container format requires mimetype to be the first entry, uncompressed.
         archive.writestr(MIMETYPE_PATH, "application/epub+zip", compress_type=ZIP_STORED)
+
         for name, content in entries.items():
             archive.writestr(name, content, compress_type=ZIP_DEFLATED)
 

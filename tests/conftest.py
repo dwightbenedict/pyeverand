@@ -31,6 +31,7 @@ SETTING_VARIABLES = (
 @pytest.fixture(autouse=True)
 def isolated_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Keep the developer's own environment and .env file out of every test."""
+
     for name in SETTING_VARIABLES:
         monkeypatch.delenv(name, raising=False)
 

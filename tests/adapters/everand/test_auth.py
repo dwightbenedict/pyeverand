@@ -24,6 +24,7 @@ class Everand:
     def __call__(self, request: httpx.Request) -> httpx.Response:
         if request.url.path == "/csrf_token":
             return self.csrf
+
         self.token_requests.append(request)
         book_id = request.url.path.split("/")[2]
         number = len(self.token_requests)
@@ -73,6 +74,7 @@ async def test_get_token_without_csrf_token_raises(
     make_session: SessionFactory, everand: Everand
 ) -> None:
     everand.csrf = httpx.Response(200, json={"csrf_token": ""})
+
     with pytest.raises(UnexpectedResponseError, match="CSRF"):
         await AccessTokenProvider(make_session(everand), 540).get_token("1")
 
@@ -81,6 +83,7 @@ async def test_get_token_csrf_request_rejected_raises(
     make_session: SessionFactory, everand: Everand
 ) -> None:
     everand.csrf = httpx.Response(403)
+
     with pytest.raises(EverandRequestError, match="POST /csrf_token returned HTTP 403"):
         await AccessTokenProvider(make_session(everand), 540).get_token("1")
 
@@ -89,6 +92,7 @@ async def test_get_token_response_not_json_raises(
     make_session: SessionFactory, everand: Everand
 ) -> None:
     everand.csrf = httpx.Response(200, text="<html>sign in</html>")
+
     with pytest.raises(UnexpectedResponseError):
         await AccessTokenProvider(make_session(everand), 540).get_token("1")
 
@@ -100,5 +104,6 @@ async def test_get_token_denied_raises_book_not_accessible(
     make_session: SessionFactory, everand: Everand, payload: dict[str, object]
 ) -> None:
     everand.token_payload = payload
+
     with pytest.raises(BookNotAccessibleError, match="Book 1 is not accessible"):
         await AccessTokenProvider(make_session(everand), 540).get_token("1")

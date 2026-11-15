@@ -78,23 +78,29 @@ def _add_metadata(package: XmlElement, book: Book, modified: datetime) -> None:
     metadata = SubElement(package, _opf("metadata"))
     _add_identifier(package, metadata, book.metadata)
     _dc(metadata, "title", book.metadata.title).set("id", "main-title")
+
     for author in book.metadata.authors:
         _dc(metadata, "creator", author)
+
     _add_optional(metadata, "publisher", book.metadata.publisher)
     _add_optional(metadata, "date", book.metadata.date_published)
+
     for subject in book.metadata.subjects:
         _dc(metadata, "subject", subject)
+
     _dc(metadata, "language", book.metadata.language)
     SubElement(metadata, _opf("meta"), property="dcterms:modified").text = modified.strftime(
         "%Y-%m-%dT%H:%M:%SZ"
     )
     _add_optional(metadata, "description", book.metadata.description)
+
     if book.cover is not None:
         SubElement(metadata, _opf("meta"), name="cover", content=COVER_ITEM_ID)
 
 
 def _image_media_type(filename: str) -> str:
     suffix = PurePosixPath(filename).suffix.lower()
+
     try:
         return IMAGE_MEDIA_TYPES[suffix]
     except KeyError as err:
@@ -112,11 +118,14 @@ def _add_manifest(package: XmlElement, book: Book) -> None:
 
     add_item("nav", NAV_HREF, XHTML_MEDIA_TYPE).set("properties", "nav")
     add_item("styles", STYLESHEET_HREF, "text/css")
+
     for chapter in book.chapters:
         add_item(chapter.nav.chapter_id, chapter_href(chapter.nav.chapter_id), XHTML_MEDIA_TYPE)
+
     if book.cover is not None:
         cover = add_item(COVER_ITEM_ID, image_href(COVER_FILENAME), "image/jpeg")
         cover.set("properties", "cover-image")
+
     # File names can start with a digit, which is not a valid XML id, so ids are numbered.
     for number, filename in enumerate(_content_images(book), start=1):
         add_item(f"image-{number}", image_href(filename), _image_media_type(filename))
@@ -131,6 +140,8 @@ def build_package_document(book: Book, modified: datetime) -> XmlElement:
     _add_metadata(package, book, modified)
     _add_manifest(package, book)
     spine = SubElement(package, _opf("spine"))
+
     for chapter in book.chapters:
         SubElement(spine, _opf("itemref"), idref=chapter.nav.chapter_id)
+
     return package

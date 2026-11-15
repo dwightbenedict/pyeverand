@@ -75,6 +75,7 @@ def test_parse_book_page_without_embedded_details_raises(script: str) -> None:
 
 def test_parse_book_page_without_script_raises() -> None:
     html = '<a data-e2e="read-button"><span><span>Read now</span></span></a>'
+
     with pytest.raises(UnexpectedResponseError, match="embedded book details"):
         parse_book_page(html, "42")
 

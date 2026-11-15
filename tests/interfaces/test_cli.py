@@ -18,6 +18,7 @@ class FakeService:
         if book_id == "404":
             msg = "Book with ID 404 not found."
             raise BookNotFoundError(msg)
+
         return output_dir / f"{book_id}.epub"
 
 

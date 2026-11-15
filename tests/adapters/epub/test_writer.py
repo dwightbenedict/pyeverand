@@ -20,6 +20,7 @@ async def test_write_creates_epub_archive_named_after_the_title(book: Book, tmp_
 
     assert path.parent == output_dir
     assert path.name == "AB Title.epub"
+
     with ZipFile(path) as archive:
         first = archive.infolist()[0]
         assert (first.filename, first.compress_type) == ("mimetype", ZIP_STORED)
@@ -41,6 +42,7 @@ async def test_write_creates_epub_archive_named_after_the_title(book: Book, tmp_
         assert archive.read("OEBPS/Images/cover.jpg") == b"cover-bytes"
         assert archive.read("OEBPS/Styles/styles.css") == b".s1 {\n  color: red;\n}\n"
         chapter = archive.read("OEBPS/Text/chapter_2.xhtml")
+
     assert chapter.startswith(b"<?xml version='1.0' encoding='utf-8'?>\n<!DOCTYPE html>\n")
     assert etree.QName(etree.fromstring(chapter)).localname == "html"
 

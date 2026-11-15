@@ -57,9 +57,11 @@ class EverandBookSource:
 
     async def fetch_metadata(self, book_id: str) -> BookMetadata:
         response = await self._session.get(f"/book/{book_id}")
+
         if response.status_code in MISSING_BOOK_STATUS_CODES:
             msg = f"Book with ID {book_id} not found."
             raise BookNotFoundError(msg)
+
         return parse_book_page(ensure_ok(response).text, book_id)
 
     async def fetch_toc(self, book_id: str) -> list[NavChapter]:

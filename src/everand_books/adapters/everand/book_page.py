@@ -45,9 +45,11 @@ def _reader_state_json(page: LexborHTMLParser) -> str:
     script = page.css_first("#root > script")
     _, opened, rest = (script.text() if script is not None else "").partition("<!--")
     payload, closed, _ = rest.partition("-->")
+
     if not opened or not closed:
         msg = "The book page does not contain the embedded book details"
         raise UnexpectedResponseError(msg)
+
     return payload.strip()
 
 
@@ -68,8 +70,10 @@ def _to_metadata(item: _ContentItem) -> BookMetadata:
 
 def parse_book_page(page_html: str, book_id: str) -> BookMetadata:
     page = LexborHTMLParser(page_html)
+
     if not _is_accessible(page):
         msg = f"Book with ID {book_id} is not accessible."
         raise BookNotAccessibleError(msg)
+
     state = parse_json(_reader_state_json(page), _READER_STATE)
     return _to_metadata(state.content_item)
