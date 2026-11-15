@@ -2,14 +2,25 @@
 .venv
 .env
 .env.*
-!.env.example
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
 .coverage
 htmlcov/
+.pyright/
+.mypy_cache/
 tests/
 docs/
+scripts/
 .github/
+.githooks/
+# every other dot file and dot directory (editor and tool state)
+.*
+!.env.example
+*.md
+!README.md
+Dockerfile
+.dockerignore
+render.yaml
 *.db
