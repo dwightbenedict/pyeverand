@@ -55,8 +55,8 @@ A local command-line tool, not a hosted service, so the Render free-tier budget 
 ## Line endings pinned to LF (`.gitattributes`)
 The repository lives on a Windows drive and is used from WSL. `* text=auto eol=lf` keeps the commit hook and `scripts/*.sh` runnable there regardless of each machine's `core.autocrlf`. Not part of the template.
 
-## Logging is configured inside the `download` command
-The template calls `configure_logging(get_settings())` in a `main()` wrapper before the Typer app starts. Here settings need the Everand credentials, so that would make `--help` fail without them and would raise `ConfigurationError` outside the command's error handler. The command configures logging as its first step instead, and `__main__` still runs `app` directly.
+## Settings errors at start-up
+As in the template, `main()` configures logging from settings before the Typer app starts. Settings need the Everand credentials, so every invocation, `--help` included, needs them; when they are missing `main()` prints the error and exits 1.
 
 ## Template update to `v0.3.0-4-ge1afde8` merged by hand
 The project was adopted (`adopt: true`), so `copier update` only moves `.copier-answers.yml`. The changes between `v0.3.0` and that commit (logging settings and `logging_config.py`, ruff `LOG`/`G` and `lines-after-imports = 2`, the layered `Dockerfile`, the wider `.dockerignore`) were applied from a diff of the project generated at both versions.

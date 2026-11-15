@@ -30,9 +30,6 @@ def download(
     ],
 ) -> None:
     try:
-        # Here and not before app(): --help must work without credentials, and a settings
-        # error must reach the handler below.
-        configure_logging(get_settings())
         epub_path = asyncio.run(_download(book_id, output_dir))
     except AppError as err:
         typer.echo(f"error: {err}", err=True)
@@ -41,5 +38,15 @@ def download(
     typer.echo(f"Saved {epub_path}")
 
 
-if __name__ == "__main__":
+def main() -> None:
+    try:
+        configure_logging(get_settings())
+    except AppError as err:
+        typer.echo(f"error: {err}", err=True)
+        raise SystemExit(1) from err
+
     app()
+
+
+if __name__ == "__main__":
+    main()
