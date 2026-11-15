@@ -3,7 +3,7 @@
 # Commit uv.lock (run `uv lock`) so image builds are reproducible.
 
 # uv comes from its own image as one static binary (a named stage so Dependabot can bump the tag).
-FROM ghcr.io/astral-sh/uv:0.13.1 AS uv
+FROM ghcr.io/astral-sh/uv:0.13.8 AS uv
 
 # Third-party dependencies only: rebuilt when pyproject.toml / uv.lock change, not on a code change.
 FROM python:3.12-slim AS deps
