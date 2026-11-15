@@ -6,7 +6,7 @@
 FROM ghcr.io/astral-sh/uv:0.13.1 AS uv
 
 # Third-party dependencies only: rebuilt when pyproject.toml / uv.lock change, not on a code change.
-FROM python:3.12-slim AS deps
+FROM python:3.15-slim AS deps
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never
@@ -23,7 +23,7 @@ COPY src ./src
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --no-deps --target /app/site .
 
-FROM python:3.12-slim
+FROM python:3.15-slim
 # /app belongs to the app user so the process can create files in its working directory
 # (a SQLite file, for example); the installed code below stays root-owned and read-only to it.
 RUN useradd --create-home --uid 1000 app && install -d -o app -g app /app
