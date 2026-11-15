@@ -5,6 +5,7 @@ import pytest
 
 from everand_books.adapters.everand import EverandSession, RequestPolicy
 
+
 type Handler = Callable[[httpx.Request], httpx.Response]
 type SessionFactory = Callable[[Handler], EverandSession]
 

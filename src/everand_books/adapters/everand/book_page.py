@@ -5,6 +5,7 @@ from everand_books.adapters.everand.responses import parse_json
 from everand_books.domain import BookMetadata
 from everand_books.errors import BookNotAccessibleError, UnexpectedResponseError
 
+
 READ_BUTTON_LABELS = frozenset({"read now", "continue reading"})
 
 

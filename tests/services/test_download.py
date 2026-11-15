@@ -12,6 +12,7 @@ from everand_books.domain import (
 )
 from everand_books.services import DownloadBookService
 
+
 TOC = [NavChapter("One", SectionKind.BODYMATTER, 0), NavChapter("Two", SectionKind.BACKMATTER, 1)]
 CHAPTERS = {1: Chapter("One", (), ("a.png", "b.png")), 2: Chapter("Two", ())}
 

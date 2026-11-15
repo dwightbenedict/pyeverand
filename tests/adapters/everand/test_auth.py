@@ -11,6 +11,7 @@ from everand_books.errors import (
     UnexpectedResponseError,
 )
 
+
 type SessionFactory = Callable[[Callable[[httpx.Request], httpx.Response]], EverandSession]
 
 

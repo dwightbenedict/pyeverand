@@ -25,6 +25,7 @@ from everand_books.adapters.epub.rendering import render_chapter
 from everand_books.adapters.epub.stylesheet import render_stylesheet
 from everand_books.domain import Book
 
+
 XHTML_DOCTYPE = "<!DOCTYPE html>"
 
 

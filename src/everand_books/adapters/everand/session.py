@@ -6,6 +6,7 @@ import httpx
 
 from everand_books.errors import EverandRequestError
 
+
 RETRYABLE_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
 
 

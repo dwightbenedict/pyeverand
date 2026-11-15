@@ -5,6 +5,7 @@ from everand_books.adapters.epub.layout import chapter_href
 from everand_books.adapters.epub.rendering import EPUB_TYPE, E
 from everand_books.domain import NavChapter
 
+
 XML_LANG = "{http://www.w3.org/XML/1998/namespace}lang"
 
 

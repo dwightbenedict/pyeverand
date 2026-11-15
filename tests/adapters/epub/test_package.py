@@ -8,6 +8,7 @@ from everand_books.adapters.epub.package import build_container_document, build_
 from everand_books.domain import Book, BookChapter, Chapter, ImageFile, NavChapter, SectionKind
 from everand_books.errors import UnsupportedImageFormatError
 
+
 MODIFIED = datetime(2026, 1, 2, 3, 4, 5, tzinfo=UTC)
 NAMESPACES = {"opf": "http://www.idpf.org/2007/opf", "dc": "http://purl.org/dc/elements/1.1/"}
 

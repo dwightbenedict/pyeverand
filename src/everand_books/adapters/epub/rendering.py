@@ -26,6 +26,7 @@ from everand_books.domain import (
 )
 from everand_books.errors import UnsupportedBlockTypeError
 
+
 XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
 EPUB_NAMESPACE = "http://www.idpf.org/2007/ops"
 EPUB_TYPE = f"{{{EPUB_NAMESPACE}}}type"

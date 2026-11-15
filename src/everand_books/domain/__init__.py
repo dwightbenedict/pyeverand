@@ -30,6 +30,7 @@ from everand_books.domain.normalization import (
     normalize_blocks,
 )
 
+
 __all__ = [
     "Book",
     "BookChapter",

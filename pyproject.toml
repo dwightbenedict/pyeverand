@@ -65,6 +65,7 @@ select = [
     "FBT",      # boolean trap (flag parameters)
     "PTH",      # pathlib
     "T20",      # no print
+    "LOG", "G", # logging: getLogger(__name__), lazy %s arguments instead of f-strings
     "S",        # security
     "PT",       # pytest style
     "ARG",      # unused arguments
@@ -89,6 +90,9 @@ max-args = 4          # 3 params + self; group more into a dataclass
 max-statements = 20
 max-branches = 8
 max-returns = 4
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2  # two empty lines between the imports and the first constant, function or class
 
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"

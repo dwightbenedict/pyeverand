@@ -28,6 +28,7 @@ from everand_books.domain import (
 )
 from everand_books.errors import UnsupportedBlockTypeError
 
+
 EPUB_TYPE = "{http://www.idpf.org/2007/ops}type"
 RENDERABLE_TYPES = [*get_args(NormalizedBlock), *get_args(get_args(Word)[0])]
 

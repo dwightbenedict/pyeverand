@@ -16,6 +16,7 @@ from everand_books.adapters.epub.layout import (
 from everand_books.domain import Book, BookMetadata
 from everand_books.errors import UnsupportedImageFormatError
 
+
 CONTAINER_NAMESPACE = "urn:oasis:names:tc:opendocument:xmlns:container"
 OPF_NAMESPACE = "http://www.idpf.org/2007/opf"
 DC_NAMESPACE = "http://purl.org/dc/elements/1.1/"

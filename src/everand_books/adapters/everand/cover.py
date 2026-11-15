@@ -4,6 +4,7 @@ from PIL import Image, UnidentifiedImageError
 
 from everand_books.errors import InvalidCoverImageError
 
+
 JPEG_MEDIA_TYPES = frozenset({"image/jpeg", "image/jpg", "image/pjpeg"})
 JPEG_QUALITY = 95
 

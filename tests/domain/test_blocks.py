@@ -12,6 +12,7 @@ from everand_books.domain import (
     TextBlock,
 )
 
+
 BLOCK: TypeAdapter[ChapterBlock] = TypeAdapter(ChapterBlock)
 
 

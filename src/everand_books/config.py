@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -45,6 +47,15 @@ class Settings(BaseSettings):
         default=8,
         ge=1,
         validation_alias=AliasChoices("EVERAND_BOOKS_HTTP_MAX_CONCURRENCY"),
+    )
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+        default="INFO",
+        validation_alias=AliasChoices("EVERAND_BOOKS_LOG_LEVEL"),
+    )
+    # json: one object per line for log collectors
+    log_format: Literal["text", "json"] = Field(
+        default="text",
+        validation_alias=AliasChoices("EVERAND_BOOKS_LOG_FORMAT"),
     )
 
 

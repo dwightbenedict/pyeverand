@@ -33,3 +33,12 @@ def test_settings_read_legacy_variable_names(monkeypatch: pytest.MonkeyPatch) ->
     assert settings.http_timeout_seconds == 12
     assert settings.http_max_attempts == 4
     assert settings.http_max_retry_delay_seconds == 6
+
+
+def test_settings_reject_an_unknown_log_level(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("EVERAND_BOOKS_SESSION_TOKEN", "token")
+    monkeypatch.setenv("EVERAND_BOOKS_USER_ID", "7")
+    monkeypatch.setenv("EVERAND_BOOKS_LOG_LEVEL", "LOUD")
+
+    with pytest.raises(ValueError, match="EVERAND_BOOKS_LOG_LEVEL"):
+        load_settings()

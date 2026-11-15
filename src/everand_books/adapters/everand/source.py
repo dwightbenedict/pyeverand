@@ -14,6 +14,7 @@ from everand_books.adapters.everand.session import EverandSession
 from everand_books.domain import BookMetadata, Chapter, ChapterBlock, NavChapter, SectionKind
 from everand_books.errors import BookNotFoundError
 
+
 IMAGE_PATH_PATTERN = re.compile(r"images/([A-Za-z0-9._-]+)")
 MISSING_BOOK_STATUS_CODES = frozenset({HTTPStatus.NOT_FOUND, HTTPStatus.GONE})
 # styles.json maps class names to declarations, plus one "styles" entry that is not a class.
