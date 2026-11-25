@@ -10,6 +10,18 @@ class InvalidCredentialsError(AppError):
     pass
 
 
+class CredentialsRequiredError(AppError):
+    pass
+
+
+class FolderPickerError(AppError):
+    pass
+
+
+class OutputDeleteError(AppError):
+    pass
+
+
 class InvalidBookReferenceError(AppError):
     pass
 

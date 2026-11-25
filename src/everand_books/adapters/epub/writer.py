@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -26,6 +27,8 @@ from everand_books.adapters.epub.stylesheet import render_stylesheet
 from everand_books.domain import Book
 from everand_books.errors import OutputWriteError
 
+
+logger = logging.getLogger(__name__)
 
 XHTML_DOCTYPE = "<!DOCTYPE html>"
 
@@ -74,6 +77,33 @@ def _write_archive(path: Path, entries: dict[str, bytes]) -> None:
             archive.writestr(name, content, compress_type=ZIP_DEFLATED)
 
 
+async def _write_in_thread(path: Path, entries: dict[str, bytes]) -> None:
+    write = asyncio.create_task(asyncio.to_thread(_write_archive, path, entries))
+
+    try:
+        await asyncio.shield(write)
+
+    except asyncio.CancelledError:
+        # A thread cannot be stopped: let it finish, then take its file away.
+        await asyncio.wait([write])
+        _remove_cancelled(path, write)
+        raise
+
+
+def _remove_cancelled(path: Path, write: asyncio.Task[None]) -> None:
+    error = write.exception()
+
+    if error is not None:
+        logger.warning("cancelled write ended with an error: %s", error)
+        return
+
+    try:
+        path.unlink(missing_ok=True)
+
+    except OSError:
+        logger.warning("could not delete a cancelled download", exc_info=True)
+
+
 def _utc_now() -> datetime:
     return datetime.now(UTC)
 
@@ -87,7 +117,7 @@ class ZipEpubWriter:
         path = output_dir / sanitize_filename(f"{book.metadata.title}.epub")
 
         try:
-            await asyncio.to_thread(_write_archive, path, entries)
+            await _write_in_thread(path, entries)
 
         except OSError as err:
             msg = f"Could not save {path}: {err.strerror or err}"

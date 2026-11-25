@@ -9,13 +9,41 @@ def _env(name: str, legacy_name: str) -> AliasChoices:
     return AliasChoices(f"EVERAND_BOOKS_{name}", legacy_name)
 
 
-class Settings(BaseSettings):
+ENV_FILE = ".env"
+
+
+class AppOptions(BaseSettings):
+    """The settings that need no Everand cookies, so the GUI can start before they exist."""
+
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ENV_FILE,
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+        default="INFO",
+        validation_alias=AliasChoices("EVERAND_BOOKS_LOG_LEVEL"),
+    )
+    # json: one object per line for log collectors
+    log_format: Literal["text", "json"] = Field(
+        default="text",
+        validation_alias=AliasChoices("EVERAND_BOOKS_LOG_FORMAT"),
+    )
+    gui_port: int = Field(
+        default=8080,
+        ge=1,
+        le=65535,
+        validation_alias=AliasChoices("EVERAND_BOOKS_GUI_PORT"),
+    )
+    # For development; works only with: python -m everand_books.interfaces.nicegui_app
+    gui_reload: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("EVERAND_BOOKS_GUI_RELOAD"),
+    )
+
+
+class Settings(AppOptions):
     session_token: str = Field(validation_alias=_env("SESSION_TOKEN", "EVERAND__SESSION_TOKEN"))
     user_id: str = Field(validation_alias=_env("USER_ID", "EVERAND__USER_ID"))
     base_url: str = Field(
@@ -48,15 +76,10 @@ class Settings(BaseSettings):
         ge=1,
         validation_alias=AliasChoices("EVERAND_BOOKS_HTTP_MAX_CONCURRENCY"),
     )
-    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
-        default="INFO",
-        validation_alias=AliasChoices("EVERAND_BOOKS_LOG_LEVEL"),
-    )
-    # json: one object per line for log collectors
-    log_format: Literal["text", "json"] = Field(
-        default="text",
-        validation_alias=AliasChoices("EVERAND_BOOKS_LOG_FORMAT"),
-    )
+
+
+def load_app_options() -> AppOptions:
+    return AppOptions()
 
 
 def load_settings() -> Settings:

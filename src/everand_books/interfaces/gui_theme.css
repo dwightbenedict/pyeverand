@@ -1,0 +1,631 @@
+/* Tokens and idioms from docs/design.md. Base: iOS (narrow). Then iPadOS, then macOS. */
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/InterVariable.woff2") format("woff2");
+}
+
+:root {
+  --label: #000000;
+  --secondary-label: rgb(60 60 67 / 0.75);
+  --separator: rgb(60 60 67 / 0.29);
+  --grouped-background: #F2F2F7;
+  --grouped-secondary-background: #FFFFFF;
+  --material: rgb(249 249 249 / 0.8);
+  --accent: #007AFF;
+  --accent-fill: #0066D6;
+  --accent-text: #0066D6;
+  --on-accent: #FFFFFF;
+  --accent-disabled: #99C2EF;
+  --on-accent-disabled: #FFFFFF;
+  --red-text: #C4001A;
+  --focus-ring: rgb(0 122 255 / 0.5);
+  --selection: rgb(0 122 255 / 0.15);
+
+  --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui,"Helvetica Neue", "Segoe UI", Roboto, sans-serif;
+  --body-size: 1.0625rem;
+  --body-line: 1.375rem;
+  --footnote-size: 0.8125rem;
+  --footnote-line: 1.125rem;
+  --title-size: 2.125rem;
+  --title-line: 2.5625rem;
+  --percent-size: 0.6875rem;
+  --sheet-background: #F2F2F7;
+  --sheet-field-background: #FFFFFF;
+  --dimming: rgb(0 0 0 / 0.3);
+  --sheet-shadow: 0 8px 32px rgb(0 0 0 / 0.2);
+  --sheet-width: 440px;
+  --popover-width: 320px;
+  --radius-sheet: 12px;
+  --ring-box: 3rem;
+  --duration: 250ms;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-16: 64px;
+  --target: 44px;
+  --icon-size: 1.5rem;
+  --radius-control: 10px;
+  --radius-group: 10px;
+  --hairline: 1px;
+  --ring-width: 3px;
+  --form-width: 672px;
+  --toolbar-height: 52px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --label: #FFFFFF;
+    --secondary-label: rgb(235 235 245 / 0.65);
+    --separator: rgb(84 84 88 / 0.6);
+    --grouped-background: #000000;
+    --grouped-secondary-background: #1C1C1E;
+    --material: rgb(30 30 30 / 0.8);
+    --accent: #0A84FF;
+    --accent-text: #409CFF;
+    --accent-disabled: #0E3358;
+    --on-accent-disabled: rgb(255 255 255 / 0.5);
+    --red-text: #FF6961;
+    --focus-ring: rgb(10 132 255 / 0.5);
+    --selection: rgb(10 132 255 / 0.25);
+    --sheet-background: #1C1C1E;
+    --sheet-field-background: #2C2C2E;
+    --dimming: rgb(0 0 0 / 0.5);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --secondary-label: var(--label);
+    --separator: var(--label);
+  }
+}
+
+body,
+body.body--dark {
+  margin: 0;
+  background: var(--grouped-background);
+  color: var(--label);
+  font-family: var(--font);
+  font-size: var(--body-size);
+  line-height: var(--body-line);
+  letter-spacing: normal;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nicegui-content {
+  padding: 0;
+  gap: 0;
+  display: block;
+}
+
+.window {
+  min-height: 100dvh;
+}
+
+.icon svg {
+  display: block;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.content {
+  box-sizing: border-box;
+  max-width: calc(var(--form-width) + var(--space-6) * 2);
+  margin: 0 auto;
+  padding: 0 var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom));
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--toolbar-height);
+  padding: calc(var(--space-2) + env(safe-area-inset-top)) var(--space-4) var(--space-2);
+  border-bottom: var(--hairline) solid var(--separator);
+  background: var(--material);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+.toolbar-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  /* Capped by the width so that large text sizes never break a word of the title. */
+  font-size: min(var(--title-size), 11vw);
+  line-height: var(--title-line);
+  font-weight: 700;
+}
+
+.icon-button {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--target);
+  height: var(--target);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--accent-text);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.content > .form {
+  padding-top: var(--space-3);
+}
+
+.caption,
+.help,
+.empty,
+.row-detail,
+.message {
+  color: var(--secondary-label);
+  font-size: var(--footnote-size);
+  line-height: var(--footnote-line);
+}
+
+.caption {
+  padding: var(--space-2) var(--space-4) 0;
+}
+
+.field {
+  width: 100%;
+  border-radius: var(--radius-control);
+  background: var(--grouped-secondary-background);
+}
+
+.field .q-field__control,
+.field .q-field__marginal {
+  min-height: var(--target);
+  height: auto;
+  padding: 0 var(--space-3);
+}
+
+.field .q-field__control::before,
+.field .q-field__control::after {
+  display: none;
+}
+
+.field .q-field__native {
+  min-height: var(--target);
+  color: var(--label);
+  font-family: var(--font);
+  font-size: var(--body-size);
+  line-height: var(--body-line);
+}
+
+.field textarea.q-field__native {
+  box-sizing: border-box;
+  /* Always ten lines: longer lists scroll. */
+  height: calc(var(--body-line) * 10 + var(--space-3) * 2);
+  padding: var(--space-3) 0;
+  overflow-y: auto;
+  resize: none;
+}
+
+.help-link {
+  align-self: flex-start;
+}
+
+/* macOS only; the other idioms use the link above. */
+.help-button {
+  display: none;
+}
+
+/* Help popover. Under 744px it is a sheet from the bottom instead. */
+.q-menu.popover {
+  background: var(--sheet-background);
+  box-shadow: var(--sheet-shadow);
+  color: var(--label);
+}
+
+@media (max-width: 743.98px) {
+  /* Quasar positions the menu with inline styles, hence !important. */
+  .q-menu.popover {
+    inset: auto 0 0 0 !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  }
+}
+
+.popover-body {
+  padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+}
+
+.steps {
+  margin: 0;
+  padding-left: var(--space-5);
+  list-style: decimal;
+}
+
+.steps li + li {
+  margin-top: var(--space-2);
+}
+
+.secret-field {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.secret-field .field {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+/* The open eye offers to show; the struck-through one offers to hide. */
+.reveal[aria-pressed="false"] .icon:last-child,
+.reveal[aria-pressed="true"] .icon:first-child {
+  display: none;
+}
+
+.folder-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.folder-picker .field {
+  flex: 1 1 12rem;
+  width: auto;
+  min-width: 0;
+}
+
+.folder-picker .button {
+  margin-left: auto;
+}
+
+.folder-picker input.q-field__native {
+  text-overflow: ellipsis;
+}
+
+.field .q-field__native::placeholder {
+  color: var(--secondary-label);
+}
+
+.field:focus-within {
+  outline: var(--ring-width) solid var(--focus-ring);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.message {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  /* One line per invalid book link. */
+  white-space: pre-line;
+}
+
+.message.error,
+.queue-row[data-status="failed"] .row-detail {
+  color: var(--red-text);
+}
+
+.button {
+  min-height: var(--target);
+  min-width: var(--target);
+  padding: var(--space-1) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--accent-text);
+  font: inherit;
+}
+
+.button.default {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+/* Quasar fades every disabled element and changes the pointer; the muted fill says it instead. */
+.button.default:disabled,
+.button.push.default:disabled {
+  background: var(--accent-disabled);
+  color: var(--on-accent-disabled);
+}
+
+/* Quasar's rules are !important inside a cascade layer, so only !important in an earlier layer
+   beats them; an unlayered !important loses. */
+@layer overrides {
+  .button:disabled {
+    cursor: default !important;
+    opacity: 1 !important;
+  }
+}
+
+.button:active:enabled,
+.icon-button:active,
+.row-action:active {
+  opacity: 0.6;
+}
+
+.button:focus-visible,
+.icon-button:focus-visible,
+.row-action:focus-visible {
+  outline: var(--ring-width) solid var(--focus-ring);
+}
+
+.queue {
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--radius-group);
+  background: var(--grouped-secondary-background);
+}
+
+/* Not ".row": Quasar uses that class inside its own components. */
+.queue-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.queue-row + .queue-row {
+  border-top: var(--hairline) solid var(--separator);
+}
+
+.queue-row-text {
+  flex: 1 1 8rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* The progress ring (cancels) and the cross that replaces it are one button. */
+.row-action {
+  position: relative;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--ring-box);
+  height: var(--ring-box);
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--secondary-label);
+  font: inherit;
+}
+
+/* Not ".ring": Tailwind, which NiceGUI ships, draws a box around that class. */
+.progress-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-width: 3;
+  transform: rotate(-90deg);
+}
+
+.progress-track {
+  stroke: var(--separator);
+}
+
+.progress-value {
+  stroke: var(--accent);
+  transition: stroke-dasharray var(--duration) ease-out;
+}
+
+.progress-percent {
+  color: var(--label);
+  font-size: var(--percent-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.queue-row[data-progress="hidden"] .progress-ring,
+.queue-row[data-progress="hidden"] .progress-percent,
+.queue-row:not([data-progress="hidden"]) .row-action .icon {
+  display: none;
+}
+
+/* No value yet: a turning arc shows that work is going on. */
+.queue-row[data-progress="busy"] .progress-value {
+  stroke-dasharray: 25 100;
+  transform-origin: center;
+  animation: busy 1s linear infinite;
+}
+
+@keyframes busy {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .queue-row .progress-value {
+    animation: none !important;
+    transition: none;
+  }
+}
+
+.empty {
+  padding: var(--space-16) 0 var(--space-6);
+  text-align: center;
+}
+
+/* Settings sheet: from the bottom on iOS, centred from 744px. */
+.q-dialog__backdrop {
+  background: var(--dimming);
+}
+
+.q-dialog__inner {
+  align-items: flex-end;
+  padding: var(--space-6) 0 0;
+}
+
+.q-dialog__inner > div.sheet {
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  background: var(--sheet-background);
+  box-shadow: var(--sheet-shadow);
+  color: var(--label);
+}
+
+.sheet .field {
+  flex-shrink: 0;
+  background: var(--sheet-field-background);
+}
+
+.sheet-header {
+  position: relative;
+}
+
+.sheet-title {
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .q-dialog__inner {
+    transform: none !important;
+    transition-property: opacity !important;
+  }
+}
+
+/* iPadOS */
+@media (min-width: 744px) {
+  .content {
+    padding: 0 var(--space-6) var(--space-6);
+  }
+
+  .toolbar {
+    padding-right: var(--space-6);
+    padding-left: var(--space-6);
+  }
+
+  .q-dialog__inner {
+    align-items: center;
+    padding: var(--space-6);
+  }
+
+  .q-dialog__inner > div.sheet {
+    max-width: var(--sheet-width);
+    padding: var(--space-5);
+    border-radius: var(--radius-sheet);
+  }
+
+  .q-menu.popover {
+    width: var(--popover-width);
+    border: var(--hairline) solid var(--separator);
+    border-radius: var(--radius-sheet);
+  }
+}
+
+/* macOS: compact controls */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  :root {
+    --body-size: 0.8125rem;
+    --body-line: 1rem;
+    --footnote-size: 0.6875rem;
+    --footnote-line: 0.875rem;
+    --title-size: 1.0625rem;
+    --title-line: 1.375rem;
+    --target: 28px;
+    --icon-size: 1rem;
+    --radius-control: 6px;
+    --ring-box: 2.25rem;
+    --percent-size: 0.625rem;
+  }
+
+  .button.push {
+    border: var(--hairline) solid var(--separator);
+    background: var(--grouped-secondary-background);
+    color: var(--label);
+  }
+
+  .button.push.default {
+    border-color: transparent;
+    background: var(--accent-fill);
+    color: var(--on-accent);
+  }
+
+  .icon-button:hover {
+    background: var(--selection);
+  }
+
+  .help-link {
+    display: none;
+  }
+
+  .help-button {
+    /* Centred on the title's row at any text size, flush with the content's right edge. */
+    position: absolute;
+    top: 50%;
+    right: 0;
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
+    width: var(--target);
+    height: var(--target);
+    padding: 0;
+    border: var(--hairline) solid var(--separator);
+    border-radius: 50%;
+    background: var(--sheet-field-background);
+    color: var(--label);
+    font: inherit;
+    font-weight: 600;
+  }
+
+  .help-button:active {
+    opacity: 0.6;
+  }
+
+  .help-button:focus-visible {
+    outline: var(--ring-width) solid var(--focus-ring);
+  }
+
+  .toolbar {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .toolbar {
+    background: var(--grouped-secondary-background);
+    backdrop-filter: none;
+  }
+}

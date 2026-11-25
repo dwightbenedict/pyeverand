@@ -60,3 +60,38 @@ As in the template, `main()` configures logging from settings before the Typer a
 
 ## Template update to `v0.3.0-4-ge1afde8` merged by hand
 The project was adopted (`adopt: true`), so `copier update` only moves `.copier-answers.yml`. The changes between `v0.3.0` and that commit (logging settings and `logging_config.py`, ruff `LOG`/`G` and `lines-after-imports = 2`, the layered `Dockerfile`, the wider `.dockerignore`) were applied from a diff of the project generated at both versions.
+
+## Second interface: a local web GUI with NiceGUI (2026-11-25)
+`everand-books-gui` serves one page on this computer for people who prefer not to use the CLI. NiceGUI was chosen over Tkinter and PySide6: it runs on asyncio like the rest of the code and is the UI framework the project template supports. It is a new dependency with many sub-dependencies of its own.
+- Added by hand: the template answers still say `interfaces: [cli]`. `docs/design.md`, `tests/test_conventions.py` and the coverage exclusion for `nicegui_app.py` (layout only) are the template's.
+- The server listens on 127.0.0.1 only and rejects other `Host` headers (DNS rebinding). It has no sign-in, so it must not be exposed to a network; the container image still runs only the CLI.
+- tvOS idiom not built: a television cannot reach a server that only listens on this computer.
+- System font stack (replaced by Inter, see "Typeface: Inter"); the two navigation icons are from Lucide (ISC), inline in `nicegui_app.py`.
+- Text fields are Quasar inputs restyled to the tokens; buttons, lists and progress bars are plain elements.
+
+## Download queue
+`services/queue.py` downloads one book at a time and lives in memory, so it is shared by all browser tabs and lost when the program stops. It catches `AppError` per book, outside the interface layer, because one failed book must not stop the others; the message is kept on the item for the interface to show. The page polls the queue instead of receiving events, so a reloaded page shows the current state.
+
+## One screen without a sidebar; settings in a sheet
+At the owner's request the GUI has no tab bar or sidebar in any idiom: with one section there is nothing to navigate. A toolbar carries the title and a gear button that opens Settings as a sheet (from the bottom under 744px, centred above). Pressing Download without cookies opens the same sheet. Only missing or malformed cookies are detected there; expired ones show up as a failed download, because telling them apart needs a request to Everand. The gear and cross icons are Lucide's; the two navigation icons are gone.
+
+## Cancelling and deleting downloads
+Each row has one button: a progress ring that cancels, replaced by a cross once the download ends. On a finished row the cross also deletes the EPUB (`SavedBooks` port), at once and without confirmation, as the owner asked; the HIG would offer undo or a confirmation for data that costs time to get back. If the file cannot be deleted the row still goes and the page says why. The queue runs each download as its own task so that one can be cancelled; the EPUB writer lets its thread finish and then removes the file.
+
+## Typeface: Inter
+At the owner's request, an exception to the system font of `docs/design.md`. The variable web font is served by the program itself from `interfaces/fonts/`, with its SIL Open Font License beside it, so no font service is contacted; the system stack stays as the fallback.
+
+## Reload during development
+`EVERAND_BOOKS_GUI_RELOAD=true` restarts the GUI when a Python or CSS file of the package changes. NiceGUI can do that only when the module is the program run, so it needs `python -m everand_books.interfaces.nicegui_app`, not `everand-books-gui`. A restart empties the download queue. Off by default.
+
+## Native folder dialog
+A browser does not tell a page the path of a folder, but the server runs on the same computer, so "Choose…" opens the system's own folder dialog there (`FolderPicker` port, `tkinter` from the standard library, no new dependency). Tk needs a main thread, so the dialog is a short-lived process (`adapters/folder_window.py`), started with `subprocess.run` in a thread because the Windows event loop used with reload has no asyncio subprocesses. The path field is read-only. It needs a desktop session and a Python with Tk; without them the page shows an error and the default Downloads folder still works.
+
+## Saved cookies shown in Settings
+At the owner's request the sheet starts with the saved cookies, both masked, each with an eye button; this replaces never showing saved values. They are sent to the page when the sheet opens and cleared when it closes. The page has no sign-in, so anyone who can open it on this computer can now read them. Cookies from real environment variables are shown too.
+
+## Console command for the cookies
+The sheet itself says one line; the steps are in a popover (a bottom sheet under 744px), opened by a "?" help button on macOS (in the sheet's upper right corner at the owner's request; the HIG puts it in a lower corner) and by "How to Find Your Cookies" elsewhere. The command is copied, not displayed. Settings offers a one-line command to run in a signed-in everand.com console. It reads `document.cookie`, so it cannot see an `HttpOnly` cookie and says so for any it does not find. Whether Everand marks these two that way is unverified: it does not set them for signed-out visitors. The sheet is 440px wide from 744px up, narrower than the HIG form sheet, at the owner's request.
+
+## Cookie setup from the GUI
+`AppOptions` holds the settings that need no cookies, so the GUI can start before they exist; `Settings` extends it. The GUI writes the two cookies into `.env` in the working directory, keeping other lines, and clears the settings cache. Real environment variables still take priority over `.env`.

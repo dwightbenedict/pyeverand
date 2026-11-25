@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from collections.abc import Callable
 from contextlib import AbstractAsyncContextManager
 from dataclasses import replace
@@ -14,7 +16,10 @@ from everand_books.domain import (
     parse_book_id,
 )
 from everand_books.errors import AppError, InvalidBookReferenceError, InvalidOutputFolderError
+from everand_books.services.ports import SavedBooks
 
+
+logger = logging.getLogger(__name__)
 
 UNEXPECTED_FAILURE = "The download stopped unexpectedly. See the terminal for details."
 UNFINISHED = frozenset({DownloadStatus.QUEUED, DownloadStatus.DOWNLOADING})
@@ -40,7 +45,22 @@ def _parse_output_dir(folder: str) -> Path:
 
 
 def _parse_book_ids(references: str) -> list[str]:
-    book_ids = [parse_book_id(line) for line in references.splitlines() if line.strip()]
+    book_ids: list[str] = []
+    problems: list[str] = []
+
+    # Blank lines are counted too, so the numbers match the lines the person sees.
+    for number, line in enumerate(references.splitlines(), start=1):
+        if not line.strip():
+            continue
+
+        try:
+            book_ids.append(parse_book_id(line))
+
+        except InvalidBookReferenceError as err:
+            problems.append(f"Line {number}: {err}")
+
+    if problems:
+        raise InvalidBookReferenceError("\n".join(problems))
 
     if not book_ids:
         msg = "Enter at least one book link or ID."
@@ -49,11 +69,26 @@ def _parse_book_ids(references: str) -> list[str]:
     return list(dict.fromkeys(book_ids))
 
 
+def check_download_request(references: str, folder: str) -> None:
+    """Raise the error that ``DownloadQueue.add`` would raise for this input."""
+    _parse_book_ids(references)
+    _parse_output_dir(folder)
+
+
 class DownloadQueue:
     """Downloads books one at a time, in the order they were added."""
 
-    def __init__(self, open_downloader: DownloaderOpener) -> None:
+    def __init__(
+        self,
+        open_downloader: DownloaderOpener,
+        saved_books: SavedBooks,
+        require_credentials: Callable[[], None],
+    ) -> None:
         self._open_downloader = open_downloader
+        self._saved_books = saved_books
+        self._require_credentials = require_credentials
+        self._active: asyncio.Task[None] | None = None
+        self._cancelled: set[int] = set()
         self._items: dict[int, QueuedDownload] = {}
         self._ids = count(1)
         self._is_running = False
@@ -63,6 +98,7 @@ class DownloadQueue:
 
     def add(self, references: str, folder: str) -> int:
         """Queue one book per line, or none if any line is invalid. Return how many were added."""
+        self._require_credentials()
         book_ids = _parse_book_ids(references)
         output_dir = _parse_output_dir(folder)
         pending = {item.book_id for item in self._items.values() if item.status in UNFINISHED}
@@ -80,11 +116,38 @@ class DownloadQueue:
         if item is not None and item.status is DownloadStatus.FAILED:
             self._items[item_id] = QueuedDownload(item_id, item.book_id, item.output_dir)
 
-    def remove(self, item_id: int) -> None:
+    async def remove(self, item_id: int) -> None:
+        """Cancel an unfinished download, or drop a finished one and delete the file it saved.
+
+        Raise ``OutputDeleteError`` when the file cannot be deleted; the item is dropped anyway.
+        """
         item = self._items.get(item_id)
 
-        if item is not None and item.status is not DownloadStatus.DOWNLOADING:
+        if item is None:
+            return
+
+        if item.status is DownloadStatus.DOWNLOADING:
+            self._cancel_active(item_id)
+
+        elif item.status is DownloadStatus.DONE and item.saved_path is not None:
+            await self._delete_saved(item.saved_path)
+
+        else:
             del self._items[item_id]
+
+    def _cancel_active(self, item_id: int) -> None:
+        # A second cancel would interrupt the clean-up that the first one started.
+        if item_id not in self._cancelled and self._active is not None:
+            self._cancelled.add(item_id)
+            self._active.cancel()
+
+    async def _delete_saved(self, path: Path) -> None:
+        # The same book downloaded twice has two items for one file.
+        for other in self.items():
+            if other.status is DownloadStatus.DONE and other.saved_path == path:
+                del self._items[other.item_id]
+
+        await self._saved_books.delete(path)
 
     async def run(self) -> None:
         """Download until nothing is queued. Does nothing if a run is already in progress."""
@@ -107,15 +170,27 @@ class DownloadQueue:
     async def _process(self, item: QueuedDownload) -> None:
         self._update(item.item_id, status=DownloadStatus.DOWNLOADING)
 
+        # A task of its own, so one download can be cancelled without stopping the queue.
+        task = self._active = asyncio.create_task(self._download(item))
+
         try:
-            await self._download(item)
+            await asyncio.wait([task])
+
+            if item.item_id in self._cancelled:
+                await self._discard(item.item_id, task)
+
+            else:
+                task.result()
 
         except AppError as err:
             # One failed book must not stop the rest of the queue.
             self._fail(item.item_id, str(err))
 
         finally:
-            if self._items[item.item_id].status is DownloadStatus.DOWNLOADING:
+            task.cancel()
+            current = self._items.get(item.item_id)
+
+            if current is not None and current.status is DownloadStatus.DOWNLOADING:
                 self._fail(item.item_id, UNEXPECTED_FAILURE)
 
     async def _download(self, item: QueuedDownload) -> None:
@@ -123,10 +198,24 @@ class DownloadQueue:
             path = await downloader.download_book(
                 item.book_id, item.output_dir, partial(self._record_progress, item.item_id)
             )
+            # Recorded at once: a cancel while the downloader closes must still find the file.
+            self._items[item.item_id] = replace(self._items[item.item_id], saved_path=path)
 
-        self._items[item.item_id] = replace(
-            self._items[item.item_id], status=DownloadStatus.DONE, saved_path=path
-        )
+        self._update(item.item_id, status=DownloadStatus.DONE)
+
+    async def _discard(self, item_id: int, task: asyncio.Task[None]) -> None:
+        self._cancelled.discard(item_id)
+        item = self._items.pop(item_id)
+
+        if not task.cancelled() and (error := task.exception()) is not None:
+            logger.warning("cancelled download ended with an error: %s", error)
+
+        if item.saved_path is not None:
+            try:
+                await self._saved_books.delete(item.saved_path)
+
+            except AppError as err:
+                logger.warning("%s", err)
 
     def _record_progress(self, item_id: int, progress: DownloadProgress) -> None:
         self._items[item_id] = replace(self._items[item_id], progress=progress)

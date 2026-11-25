@@ -3,7 +3,7 @@ import logging
 from datetime import UTC, datetime
 from typing import override
 
-from everand_books.config import Settings
+from everand_books.config import AppOptions
 
 
 TEXT_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
@@ -26,7 +26,7 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(entry)
 
 
-def configure_logging(settings: Settings) -> None:
+def configure_logging(settings: AppOptions) -> None:
     """Send every log record to stderr in one format. Call once, from an entry point."""
     handler = logging.StreamHandler()
     is_json = settings.log_format == "json"

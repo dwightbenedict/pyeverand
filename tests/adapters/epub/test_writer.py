@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -13,6 +14,46 @@ from everand_books.errors import OutputWriteError
 
 def fixed_clock() -> datetime:
     return datetime(2026, 1, 2, tzinfo=UTC)
+
+
+async def cancel_during_write(book: Book, output_dir: Path) -> None:
+    write = asyncio.create_task(ZipEpubWriter().write(book, output_dir))
+    await asyncio.sleep(0)
+    write.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await write
+
+
+async def test_write_cancelled_leaves_no_file(book: Book, tmp_path: Path) -> None:
+    await cancel_during_write(book, tmp_path / "out")
+
+    assert (tmp_path / "out").is_dir()
+    assert list((tmp_path / "out").iterdir()) == []
+
+
+async def test_write_cancelled_that_also_fails_logs_the_failure(
+    book: Book, tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    not_a_folder = tmp_path / "taken"
+    not_a_folder.write_text("")
+
+    await cancel_during_write(book, not_a_folder)
+
+    assert "cancelled write ended with an error" in caplog.text
+
+
+async def test_write_cancelled_with_a_locked_file_logs_that_it_stays(
+    book: Book, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    def refuse(path: Path, missing_ok: bool = False) -> None:
+        raise PermissionError(path)
+
+    monkeypatch.setattr(Path, "unlink", refuse)
+
+    await cancel_during_write(book, tmp_path / "out")
+
+    assert "could not delete a cancelled download" in caplog.text
 
 
 async def test_write_creates_epub_archive_named_after_the_title(book: Book, tmp_path: Path) -> None:

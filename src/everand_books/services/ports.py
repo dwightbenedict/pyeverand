@@ -25,5 +25,17 @@ class CredentialStore(Protocol):
     async def save(self, credentials: Credentials) -> None: ...
 
 
+class FolderPicker(Protocol):
+    async def pick(self, initial: Path) -> Path | None:
+        """Return ``None`` if cancelled. Raise ``FolderPickerError`` if no dialog can open."""
+        ...
+
+
+class SavedBooks(Protocol):
+    async def delete(self, path: Path) -> None:
+        """Succeed if the file is already gone. Raise ``OutputDeleteError`` if it stays."""
+        ...
+
+
 class EpubWriter(Protocol):
     async def write(self, book: Book, output_dir: Path) -> Path: ...

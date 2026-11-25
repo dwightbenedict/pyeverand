@@ -6,6 +6,8 @@ from everand_books.adapters.everand import (
     EverandSession,
     RequestPolicy,
 )
+from everand_books.adapters.folder_dialog import SystemFolderDialog
+from everand_books.adapters.saved_books import LocalSavedBooks
 
 
 __all__ = [
@@ -13,6 +15,8 @@ __all__ = [
     "EnvFileCredentialStore",
     "EverandBookSource",
     "EverandSession",
+    "LocalSavedBooks",
     "RequestPolicy",
+    "SystemFolderDialog",
     "ZipEpubWriter",
 ]
