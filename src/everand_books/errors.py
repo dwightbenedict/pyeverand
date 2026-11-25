@@ -6,6 +6,10 @@ class ConfigurationError(AppError):
     pass
 
 
+class InvalidCredentialsError(AppError):
+    pass
+
+
 class InvalidBookReferenceError(AppError):
     pass
 

@@ -24,6 +24,7 @@ from everand_books.domain.book import (
     SectionKind,
 )
 from everand_books.domain.book_reference import parse_book_id
+from everand_books.domain.credentials import Credentials, parse_credentials
 from everand_books.domain.normalization import (
     ListBlock,
     NormalizedBlock,
@@ -42,6 +43,7 @@ __all__ = [
     "Chapter",
     "ChapterBlock",
     "CompositeWord",
+    "Credentials",
     "DownloadProgress",
     "DownloadStatus",
     "HTMLBlock",
@@ -65,4 +67,5 @@ __all__ = [
     "Word",
     "normalize_blocks",
     "parse_book_id",
+    "parse_credentials",
 ]

@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Protocol
 
-from everand_books.domain import Book, BookMetadata, Chapter, NavChapter
+from everand_books.domain import Book, BookMetadata, Chapter, Credentials, NavChapter
 
 
 class BookSource(Protocol):
@@ -19,6 +19,10 @@ class BookSource(Protocol):
     async def fetch_chapter_image(self, book_id: str, number: int, filename: str) -> bytes: ...
 
     async def fetch_cover(self, cover_url: str) -> bytes: ...
+
+
+class CredentialStore(Protocol):
+    async def save(self, credentials: Credentials) -> None: ...
 
 
 class EpubWriter(Protocol):
