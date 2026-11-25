@@ -103,3 +103,18 @@ def test_describe_request_valid_input_enables_download() -> None:
 
 def test_default_output_dir_is_the_downloads_folder() -> None:
     assert Path(default_output_dir()) == Path.home() / "Downloads"
+
+
+@pytest.mark.parametrize(
+    ("status", "question"),
+    [
+        (DownloadStatus.QUEUED, None),
+        (DownloadStatus.DOWNLOADING, None),
+        (DownloadStatus.DONE, "Delete “Book 42”?"),
+        (DownloadStatus.FAILED, None),
+    ],
+)
+def test_delete_question_is_asked_only_when_a_file_would_be_deleted(
+    status: DownloadStatus, question: str | None
+) -> None:
+    assert describe_item(queued(status)).delete_question == question

@@ -98,16 +98,44 @@ def _circle(kind: str) -> ui.element:
     return ui.element("circle").classes(kind).props("cx=18 cy=18 r=16 pathLength=100")
 
 
-async def _on_remove(item_id: int, message: ui.label) -> None:
+class _DeleteAlert:
+    def __init__(self) -> None:
+        with ui.dialog().props("no-backdrop-dismiss") as self._dialog:
+            self._card = ui.element("div").classes("alert")
+
+        self._card.props("role=alertdialog aria-modal=true")
+
+        with self._card:
+            self._title = ui.label().classes("alert-title")
+            ui.label("Its EPUB file will be deleted. You cannot undo this.").classes("help")
+
+            with ui.element("div").classes("alert-actions"):
+                _button("Cancel", lambda: self._dialog.submit(result=False)).props("autofocus")
+                _button("Delete", lambda: self._dialog.submit(result=True), "push destructive")
+
+    async def confirm(self, title: str) -> bool:
+        self._title.text = title
+        # Set directly, like the row button's label: a book title may hold quotes.
+        self._card.props["aria-label"] = title
+        self._card.update()
+        return bool(await self._dialog)
+
+
+async def _on_remove(item_id: int, view: RowView, alert: _DeleteAlert, message: ui.label) -> None:
+    question = view.delete_question
+
+    if question is not None and not await alert.confirm(question):
+        return
+
     try:
-        await get_download_queue().remove(item_id)
+        await get_download_queue().remove(item_id, delete_saved=question is not None)
 
     except AppError as err:
         _show_message(message, str(err), is_error=True)
 
 
 class _QueueRow:
-    def __init__(self, item_id: int, message: ui.label) -> None:
+    def __init__(self, item_id: int, alert: _DeleteAlert, message: ui.label) -> None:
         with ui.element("li").classes("queue-row") as self.root:
             with ui.element("div").classes("queue-row-text"):
                 self._title = ui.label().classes("row-title")
@@ -126,13 +154,15 @@ class _QueueRow:
                 self._percent = ui.label().classes("progress-percent").props("aria-hidden=true")
                 _icon(REMOVE_ICON)
 
-            self._action.on("click", lambda: _on_remove(item_id, message))
+            # The view on screen at the press decides whether to ask, not the queue's newer state.
+            self._action.on("click", lambda: _on_remove(item_id, self._view, alert, message))
 
     def _on_retry(self, item_id: int) -> None:
         get_download_queue().retry(item_id)
         _start_queue()
 
     def show(self, view: RowView) -> None:
+        self._view = view
         self._title.text = view.title
         self._detail.text = view.detail
         self.root.props(f"data-status={view.status}")
@@ -149,6 +179,8 @@ class _QueueRow:
 class _QueueList:
     def __init__(self, message: ui.label) -> None:
         self._message = message
+        # Outside the rows, so that removing a row cannot take an open alert with it.
+        self._alert = _DeleteAlert()
         self._empty = ui.label("No downloads yet.").classes("empty")
         self._list = ui.element("ul").classes("group queue").props('aria-label="Downloads"')
         self._rows: dict[int, _QueueRow] = {}
@@ -162,7 +194,7 @@ class _QueueList:
         for item in items:
             if item.item_id not in self._rows:
                 with self._list:
-                    self._rows[item.item_id] = _QueueRow(item.item_id, self._message)
+                    self._rows[item.item_id] = _QueueRow(item.item_id, self._alert, self._message)
 
             self._rows[item.item_id].show(describe_item(item))
 

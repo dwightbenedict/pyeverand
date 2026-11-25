@@ -116,8 +116,11 @@ class DownloadQueue:
         if item is not None and item.status is DownloadStatus.FAILED:
             self._items[item_id] = QueuedDownload(item_id, item.book_id, item.output_dir)
 
-    async def remove(self, item_id: int) -> None:
-        """Cancel an unfinished download, or drop a finished one and delete the file it saved.
+    async def remove(self, item_id: int, *, delete_saved: bool = False) -> None:
+        """Cancel an unfinished download, or drop an ended one.
+
+        A finished download is dropped, and its file deleted, only if ``delete_saved`` is true,
+        so a request to cancel that arrives after the download ended deletes nothing.
 
         Raise ``OutputDeleteError`` when the file cannot be deleted; the item is dropped anyway.
         """
@@ -130,7 +133,8 @@ class DownloadQueue:
             self._cancel_active(item_id)
 
         elif item.status is DownloadStatus.DONE and item.saved_path is not None:
-            await self._delete_saved(item.saved_path)
+            if delete_saved:
+                await self._delete_saved(item.saved_path)
 
         else:
             del self._items[item_id]

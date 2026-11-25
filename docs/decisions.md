@@ -98,3 +98,6 @@ At the owner's request, replacing the old names in the entries above: the packag
 
 ## Cookie setup from the GUI
 `AppOptions` holds the settings that need no cookies, so the GUI can start before they exist; `Settings` extends it. The GUI writes the two cookies into `.env` in the working directory, keeping other lines, and clears the settings cache. Real environment variables still take priority over `.env`.
+
+## Confirming a delete (2026-11-26)
+At the owner's request, replacing "at once and without confirmation" under "Cancelling and deleting downloads": the cross on a finished row opens a HIG alert (Cancel, Delete) before the EPUB is deleted. The cross on a failed row and the progress ring still act at once. `DownloadQueue.remove` deletes a finished download's file only with `delete_saved=True`, which the page passes after the alert, so a cancel pressed just as the download finishes deletes nothing.

@@ -26,6 +26,11 @@ class RowView:
         return self.status is DownloadStatus.FAILED
 
     @property
+    def delete_question(self) -> str | None:
+        """Title of the alert to confirm before the row's button deletes a file."""
+        return f"Delete “{self.title}”?" if self.status is DownloadStatus.DONE else None
+
+    @property
     def action_label(self) -> str:
         """Name the row's one button: the progress ring, or the cross that replaces it."""
         match self.status:

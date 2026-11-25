@@ -239,7 +239,7 @@ async def test_remove_finished_item_deletes_its_file_and_every_item_for_that_fil
         queue.add(references, str(tmp_path))
         await queue.run()
 
-    await queue.remove(1)
+    await queue.remove(1, delete_saved=True)
 
     assert [item.book_id for item in queue.items()] == ["2"]
     assert saved_books.deleted == [tmp_path / "1.epub"]
@@ -253,7 +253,7 @@ async def test_remove_finished_item_drops_it_even_when_the_file_cannot_be_delete
     await queue.run()
 
     with pytest.raises(OutputDeleteError):
-        await queue.remove(1)
+        await queue.remove(1, delete_saved=True)
 
     assert queue.items() == ()
 
@@ -348,3 +348,15 @@ def test_add_without_credentials_queues_nothing(tmp_path: Path) -> None:
         queue.add("1", str(tmp_path))
 
     assert queue.items() == ()
+
+
+async def test_remove_finished_item_without_confirmation_keeps_it_and_its_file(
+    queue: DownloadQueue, saved_books: FakeSavedBooks, tmp_path: Path
+) -> None:
+    queue.add("1", str(tmp_path))
+    await queue.run()
+
+    await queue.remove(1)
+
+    assert [item.status for item in queue.items()] == [DownloadStatus.DONE]
+    assert saved_books.deleted == []
