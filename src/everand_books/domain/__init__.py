@@ -23,6 +23,7 @@ from everand_books.domain.book import (
     NavChapter,
     SectionKind,
 )
+from everand_books.domain.book_reference import parse_book_id
 from everand_books.domain.normalization import (
     ListBlock,
     NormalizedBlock,
@@ -30,6 +31,7 @@ from everand_books.domain.normalization import (
     normalize_blocks,
 )
 from everand_books.domain.progress import DownloadProgress, ProgressListener
+from everand_books.domain.queued_download import DownloadStatus, QueuedDownload
 
 
 __all__ = [
@@ -41,6 +43,7 @@ __all__ = [
     "ChapterBlock",
     "CompositeWord",
     "DownloadProgress",
+    "DownloadStatus",
     "HTMLBlock",
     "ImageBlock",
     "ImageFile",
@@ -50,6 +53,7 @@ __all__ = [
     "NormalizedBlock",
     "PageBreakBlock",
     "ProgressListener",
+    "QueuedDownload",
     "SectionKind",
     "SimpleWord",
     "SpacerBlock",
@@ -60,4 +64,5 @@ __all__ = [
     "TextBlock",
     "Word",
     "normalize_blocks",
+    "parse_book_id",
 ]

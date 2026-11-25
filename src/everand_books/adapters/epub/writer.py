@@ -24,6 +24,7 @@ from everand_books.adapters.epub.package import build_container_document, build_
 from everand_books.adapters.epub.rendering import render_chapter
 from everand_books.adapters.epub.stylesheet import render_stylesheet
 from everand_books.domain import Book
+from everand_books.errors import OutputWriteError
 
 
 XHTML_DOCTYPE = "<!DOCTYPE html>"
@@ -84,5 +85,12 @@ class ZipEpubWriter:
     async def write(self, book: Book, output_dir: Path) -> Path:
         entries = build_archive_entries(book, self._clock())
         path = output_dir / sanitize_filename(f"{book.metadata.title}.epub")
-        await asyncio.to_thread(_write_archive, path, entries)
+
+        try:
+            await asyncio.to_thread(_write_archive, path, entries)
+
+        except OSError as err:
+            msg = f"Could not save {path}: {err.strerror or err}"
+            raise OutputWriteError(msg) from err
+
         return path

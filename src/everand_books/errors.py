@@ -6,6 +6,18 @@ class ConfigurationError(AppError):
     pass
 
 
+class InvalidBookReferenceError(AppError):
+    pass
+
+
+class InvalidOutputFolderError(AppError):
+    pass
+
+
+class OutputWriteError(AppError):
+    pass
+
+
 class BookNotFoundError(AppError):
     pass
 

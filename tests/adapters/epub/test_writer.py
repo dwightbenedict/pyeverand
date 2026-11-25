@@ -3,10 +3,12 @@ from datetime import UTC, datetime
 from pathlib import Path
 from zipfile import ZIP_STORED, ZipFile
 
+import pytest
 from lxml import etree
 
 from everand_books.adapters.epub import ZipEpubWriter
 from everand_books.domain import Book
+from everand_books.errors import OutputWriteError
 
 
 def fixed_clock() -> datetime:
@@ -45,6 +47,14 @@ async def test_write_creates_epub_archive_named_after_the_title(book: Book, tmp_
 
     assert chapter.startswith(b"<?xml version='1.0' encoding='utf-8'?>\n<!DOCTYPE html>\n")
     assert etree.QName(etree.fromstring(chapter)).localname == "html"
+
+
+async def test_write_into_a_file_path_raises_output_write_error(book: Book, tmp_path: Path) -> None:
+    not_a_folder = tmp_path / "taken"
+    not_a_folder.write_text("")
+
+    with pytest.raises(OutputWriteError, match="Could not save"):
+        await ZipEpubWriter().write(book, not_a_folder)
 
 
 async def test_write_without_cover_leaves_cover_out(book: Book, tmp_path: Path) -> None:
