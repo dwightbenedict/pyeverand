@@ -87,6 +87,8 @@ At the owner's request, an exception to the system font of `docs/design.md`. The
 ## Native folder dialog
 A browser does not tell a page the path of a folder, but the server runs on the same computer, so "Choose…" opens the system's own folder dialog there (`FolderPicker` port, `tkinter` from the standard library, no new dependency). Tk needs a main thread, so the dialog is a short-lived process (`adapters/folder_window.py`), started with `subprocess.run` in a thread because the Windows event loop used with reload has no asyncio subprocesses. The path field is read-only. It needs a desktop session and a Python with Tk; without them the page shows an error and the default Downloads folder still works.
 
+Why Tk although the interface is NiceGUI: Tk only draws this dialog. NiceGUI 4.1.0's own folder dialog (`create_file_dialog`) belongs to its desktop window mode (`native=True`), which needs `pywebview`, a new dependency, and shows the app in that window instead of the browser. Its upload element offers no folder-path option. On 2026-11-26 the owner chose to keep the browser interface and Tk.
+
 ## Saved cookies shown in Settings
 At the owner's request the sheet starts with the saved cookies, both masked, each with an eye button; this replaces never showing saved values. They are sent to the page when the sheet opens and cleared when it closes. The page has no sign-in, so anyone who can open it on this computer can now read them. Cookies from real environment variables are shown too.
 
