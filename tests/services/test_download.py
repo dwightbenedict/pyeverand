@@ -6,6 +6,7 @@ from everand_books.domain import (
     BookChapter,
     BookMetadata,
     Chapter,
+    DownloadProgress,
     ImageFile,
     NavChapter,
     SectionKind,
@@ -77,6 +78,15 @@ async def test_download_book_assembles_book_and_returns_written_path(tmp_path: P
             cover=b"https://img/cover",
         )
     ]
+
+
+async def test_download_book_with_listener_reports_each_finished_chapter(tmp_path: Path) -> None:
+    reports: list[DownloadProgress] = []
+    service = DownloadBookService(FakeSource(None), FakeWriter())
+
+    await service.download_book("1", tmp_path, reports.append)
+
+    assert reports == [DownloadProgress("Title", done, 2) for done in (0, 1, 2)]
 
 
 async def test_download_book_without_cover_url_skips_cover(tmp_path: Path) -> None:

@@ -29,6 +29,7 @@ from everand_books.domain.normalization import (
     TableBlock,
     normalize_blocks,
 )
+from everand_books.domain.progress import DownloadProgress, ProgressListener
 
 
 __all__ = [
@@ -39,6 +40,7 @@ __all__ = [
     "Chapter",
     "ChapterBlock",
     "CompositeWord",
+    "DownloadProgress",
     "HTMLBlock",
     "ImageBlock",
     "ImageFile",
@@ -47,6 +49,7 @@ __all__ = [
     "NavChapter",
     "NormalizedBlock",
     "PageBreakBlock",
+    "ProgressListener",
     "SectionKind",
     "SimpleWord",
     "SpacerBlock",
