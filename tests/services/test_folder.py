@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from everand_books.errors import FolderPickerError
-from everand_books.services import ChooseFolderService
+from pyeverand.errors import FolderPickerError
+from pyeverand.services import ChooseFolderService
 
 
 class FakePicker:

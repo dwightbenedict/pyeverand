@@ -1,7 +1,7 @@
 from dataclasses import replace
 
-from everand_books.adapters.epub.images import plan_images
-from everand_books.domain import Book, BookChapter, Chapter, ImageFile, NavChapter, SectionKind
+from pyeverand.adapters.epub.images import plan_images
+from pyeverand.domain import Book, BookChapter, Chapter, ImageFile, NavChapter, SectionKind
 
 
 def chapter(anchor: int, *images: ImageFile) -> BookChapter:

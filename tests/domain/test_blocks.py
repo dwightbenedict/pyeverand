@@ -1,7 +1,7 @@
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from everand_books.domain import (
+from pyeverand.domain import (
     ChapterBlock,
     CompositeWord,
     ImageBlock,

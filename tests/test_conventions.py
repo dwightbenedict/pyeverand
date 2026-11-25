@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 UI_DIRS = [
-    ROOT / "src" / "everand_books" / "interfaces",
+    ROOT / "src" / "pyeverand" / "interfaces",
 ]
 SUFFIXES = {".css", ".ts", ".html", ".py"}
 RAW_COLOUR = re.compile(r"#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(")

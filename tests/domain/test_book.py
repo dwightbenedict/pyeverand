@@ -1,4 +1,4 @@
-from everand_books.domain import NavChapter, SectionKind
+from pyeverand.domain import NavChapter, SectionKind
 
 
 def test_nav_chapter_number_and_id_are_one_based() -> None:

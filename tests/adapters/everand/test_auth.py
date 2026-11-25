@@ -4,8 +4,8 @@ from urllib.parse import parse_qs
 import httpx
 import pytest
 
-from everand_books.adapters.everand import AccessTokenProvider, EverandSession
-from everand_books.errors import (
+from pyeverand.adapters.everand import AccessTokenProvider, EverandSession
+from pyeverand.errors import (
     BookNotAccessibleError,
     EverandRequestError,
     UnexpectedResponseError,

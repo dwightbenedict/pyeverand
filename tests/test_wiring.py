@@ -1,9 +1,9 @@
 import pytest
 
-from everand_books.domain import Credentials
-from everand_books.errors import ConfigurationError, CredentialsRequiredError
-from everand_books.services import DownloadBookService
-from everand_books.wiring import (
+from pyeverand.domain import Credentials
+from pyeverand.errors import ConfigurationError, CredentialsRequiredError
+from pyeverand.services import DownloadBookService
+from pyeverand.wiring import (
     get_app_options,
     get_choose_folder_service,
     get_download_queue,
@@ -22,15 +22,15 @@ def test_get_app_options_needs_no_credentials() -> None:
 def test_get_app_options_reads_the_reload_switch(monkeypatch: pytest.MonkeyPatch) -> None:
     assert get_app_options().gui_reload is False
 
-    monkeypatch.setenv("EVERAND_BOOKS_GUI_RELOAD", "true")
+    monkeypatch.setenv("PYEVERAND_GUI_RELOAD", "true")
 
     assert get_app_options().gui_reload is True
 
 
 def test_get_app_options_invalid_value_names_the_setting(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("EVERAND_BOOKS_GUI_PORT", "0")
+    monkeypatch.setenv("PYEVERAND_GUI_PORT", "0")
 
-    with pytest.raises(ConfigurationError, match="EVERAND_BOOKS_GUI_PORT"):
+    with pytest.raises(ConfigurationError, match="PYEVERAND_GUI_PORT"):
         get_app_options()
 
 
@@ -47,8 +47,8 @@ def test_require_credentials_without_cookies_raises(
     monkeypatch: pytest.MonkeyPatch, token: str | None
 ) -> None:
     if token is not None:
-        monkeypatch.setenv("EVERAND_BOOKS_SESSION_TOKEN", token)
-        monkeypatch.setenv("EVERAND_BOOKS_USER_ID", "7")
+        monkeypatch.setenv("PYEVERAND_SESSION_TOKEN", token)
+        monkeypatch.setenv("PYEVERAND_USER_ID", "7")
 
     with pytest.raises(CredentialsRequiredError):
         require_credentials()
@@ -83,8 +83,8 @@ async def test_saved_credentials_are_used_by_the_next_settings_read(
 
 @pytest.fixture
 def credentials(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("EVERAND_BOOKS_SESSION_TOKEN", "token")
-    monkeypatch.setenv("EVERAND_BOOKS_USER_ID", "7")
+    monkeypatch.setenv("PYEVERAND_SESSION_TOKEN", "token")
+    monkeypatch.setenv("PYEVERAND_USER_ID", "7")
 
 
 @pytest.mark.usefixtures("credentials")
@@ -93,7 +93,7 @@ def test_get_settings_is_cached() -> None:
 
 
 def test_get_settings_without_credentials_names_missing_settings() -> None:
-    with pytest.raises(ConfigurationError, match="EVERAND_BOOKS_SESSION_TOKEN"):
+    with pytest.raises(ConfigurationError, match="PYEVERAND_SESSION_TOKEN"):
         get_settings()
 
 

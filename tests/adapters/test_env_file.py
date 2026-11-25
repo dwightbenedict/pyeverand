@@ -2,10 +2,10 @@ from pathlib import Path
 
 import pytest
 
-from everand_books.adapters import EnvFileCredentialStore
-from everand_books.config import Settings
-from everand_books.domain import Credentials
-from everand_books.errors import ConfigurationError
+from pyeverand.adapters import EnvFileCredentialStore
+from pyeverand.config import Settings
+from pyeverand.domain import Credentials
+from pyeverand.errors import ConfigurationError
 
 
 def _file_names(folder: Path) -> list[str]:
@@ -28,19 +28,16 @@ async def test_save_replaces_old_cookie_lines_and_keeps_the_rest(tmp_path: Path)
     path = tmp_path / ".env"
     path.write_text(
         "# mine\n"
-        "export EVERAND_BOOKS_SESSION_TOKEN=old\n"
+        "export PYEVERAND_SESSION_TOKEN=old\n"
         "EVERAND__USER_ID = 1\n"
-        "EVERAND_BOOKS_LOG_LEVEL=DEBUG\n",
+        "PYEVERAND_LOG_LEVEL=DEBUG\n",
         encoding="utf-8",
     )
 
     await EnvFileCredentialStore(path).save(Credentials("new", "2"))
 
     assert path.read_text(encoding="utf-8") == (
-        "# mine\n"
-        "EVERAND_BOOKS_LOG_LEVEL=DEBUG\n"
-        "EVERAND_BOOKS_SESSION_TOKEN='new'\n"
-        "EVERAND_BOOKS_USER_ID='2'\n"
+        "# mine\nPYEVERAND_LOG_LEVEL=DEBUG\nPYEVERAND_SESSION_TOKEN='new'\nPYEVERAND_USER_ID='2'\n"
     )
 
 

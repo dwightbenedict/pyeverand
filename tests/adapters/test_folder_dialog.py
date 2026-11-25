@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from everand_books.adapters import SystemFolderDialog, folder_window
-from everand_books.errors import FolderPickerError
+from pyeverand.adapters import SystemFolderDialog, folder_window
+from pyeverand.errors import FolderPickerError
 
 
 ECHO = "import sys; sys.stdout.buffer.write(sys.argv[1].encode())"

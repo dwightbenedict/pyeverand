@@ -1,5 +1,5 @@
 [project]
-name = "everand-books"
+name = "pyeverand"
 version = "0.1.0"
 description = "Download Everand books you can read and package them as EPUB files"
 readme = "README.md"
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-everand-books-gui = "everand_books.interfaces.nicegui_app:run"
+pyeverand-gui = "pyeverand.interfaces.nicegui_app:run"
 
 [dependency-groups]
 dev = [
@@ -36,7 +36,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/everand_books"]
+packages = ["src/pyeverand"]
 
 # ---------------------------------------------------------------- ruff
 [tool.ruff]
@@ -112,8 +112,8 @@ extend-immutable-calls = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "ANN", "PLR2004", "ARG", "FBT"]
-"src/everand_books/__main__.py" = ["T20"]            # entry point may print
-"src/everand_books/interfaces/cli.py" = ["T20", "FBT"]  # CLI output + boolean options are normal
+"src/pyeverand/__main__.py" = ["T20"]            # entry point may print
+"src/pyeverand/interfaces/cli.py" = ["T20", "FBT"]  # CLI output + boolean options are normal
 
 # ---------------------------------------------------------------- pyright
 [tool.pyright]
@@ -125,14 +125,14 @@ reportMissingTypeStubs = false
 # ---------------------------------------------------------------- pytest
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra --strict-markers --strict-config --cov=everand_books --cov-report=term-missing"
+addopts = "-ra --strict-markers --strict-config --cov=pyeverand --cov-report=term-missing"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 
 # ---------------------------------------------------------------- coverage (fixed at 100%)
 [tool.coverage.run]
 branch = true
-source = ["everand_books"]
+source = ["pyeverand"]
 # UI layout files hold no logic, so they are verified in a browser instead of by unit tests.
 omit = [
     "*/interfaces/nicegui_app.py",
@@ -145,23 +145,23 @@ exclude_also = ["if __name__ == .__main__.:"]
 
 # ---------------------------------------------------------------- import-linter
 [tool.importlinter]
-root_package = "everand_books"
+root_package = "pyeverand"
 include_external_packages = true
 
 [[tool.importlinter.contracts]]
 name = "Layers: interfaces -> adapters -> services -> domain"
 type = "layers"
 layers = [
-    "everand_books.interfaces",
-    "everand_books.adapters",
-    "everand_books.services",
-    "everand_books.domain",
+    "pyeverand.interfaces",
+    "pyeverand.adapters",
+    "pyeverand.services",
+    "pyeverand.domain",
 ]
 
 [[tool.importlinter.contracts]]
 name = "Domain is pure (no I/O or framework libraries)"
 type = "forbidden"
-source_modules = ["everand_books.domain"]
+source_modules = ["pyeverand.domain"]
 forbidden_modules = [
     "requests", "httpx", "sqlalchemy", "sqlite3", "fastapi", "nicegui", "reflex", "click", "typer",
     "psycopg", "asyncpg", "pymysql", "aiomysql", "aiosqlite",
@@ -171,9 +171,9 @@ forbidden_modules = [
 name = "Core is UI-free (domain, services, adapters never import a UI framework)"
 type = "forbidden"
 source_modules = [
-    "everand_books.domain", "everand_books.services", "everand_books.adapters",
+    "pyeverand.domain", "pyeverand.services", "pyeverand.adapters",
 ]
 forbidden_modules = [
     "fastapi", "starlette", "nicegui", "reflex", "typer", "click", "flask", "streamlit", "flet",
-    "everand_books.interfaces",
+    "pyeverand.interfaces",
 ]

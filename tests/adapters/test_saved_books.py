@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from everand_books.adapters import LocalSavedBooks
-from everand_books.errors import OutputDeleteError
+from pyeverand.adapters import LocalSavedBooks
+from pyeverand.errors import OutputDeleteError
 
 
 async def test_delete_removes_the_file_and_accepts_a_missing_one(tmp_path: Path) -> None:

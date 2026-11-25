@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# Build:  docker build -t everand-books .
+# Build:  docker build -t pyeverand .
 # Commit uv.lock (run `uv lock`) so image builds are reproducible.
 
 # uv comes from its own image as one static binary (a named stage so Dependabot can bump the tag).
@@ -36,5 +36,5 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONPATH=/app/site \
     PYTHONUNBUFFERED=1
 USER app
-ENTRYPOINT ["python", "-m", "everand_books"]
+ENTRYPOINT ["python", "-m", "pyeverand"]
 CMD ["--help"]

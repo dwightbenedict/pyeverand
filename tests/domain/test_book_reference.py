@@ -1,7 +1,7 @@
 import pytest
 
-from everand_books.domain import parse_book_id
-from everand_books.errors import InvalidBookReferenceError
+from pyeverand.domain import parse_book_id
+from pyeverand.errors import InvalidBookReferenceError
 
 
 @pytest.mark.parametrize(

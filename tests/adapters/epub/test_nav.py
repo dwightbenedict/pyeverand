@@ -1,5 +1,5 @@
-from everand_books.adapters.epub.nav import build_nav_document
-from everand_books.domain import NavChapter, SectionKind
+from pyeverand.adapters.epub.nav import build_nav_document
+from pyeverand.domain import NavChapter, SectionKind
 
 
 XHTML = {"x": "http://www.w3.org/1999/xhtml"}

@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from everand_books.domain import DownloadProgress, DownloadStatus, ProgressListener
-from everand_books.errors import (
+from pyeverand.domain import DownloadProgress, DownloadStatus, ProgressListener
+from pyeverand.errors import (
     BookNotFoundError,
     CredentialsRequiredError,
     EverandRequestError,
@@ -14,7 +14,7 @@ from everand_books.errors import (
     InvalidOutputFolderError,
     OutputDeleteError,
 )
-from everand_books.services import DownloadQueue
+from pyeverand.services import DownloadQueue
 
 
 class FakeDownloader:

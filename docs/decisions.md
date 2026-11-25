@@ -93,5 +93,8 @@ At the owner's request the sheet starts with the saved cookies, both masked, eac
 ## Console command for the cookies
 The sheet itself says one line; the steps are in a popover (a bottom sheet under 744px), opened by a "?" help button on macOS (in the sheet's upper right corner at the owner's request; the HIG puts it in a lower corner) and by "How to Find Your Cookies" elsewhere. The command is copied, not displayed. Settings offers a one-line command to run in a signed-in everand.com console. It reads `document.cookie`, so it cannot see an `HttpOnly` cookie and says so for any it does not find. Whether Everand marks these two that way is unverified: it does not set them for signed-out visitors. The sheet is 440px wide from 744px up, narrower than the HIG form sheet, at the owner's request.
 
+## Renamed to pyeverand (2026-11-26)
+At the owner's request, replacing the old names in the entries above: the package is `pyeverand` (was `everand_books`), the distribution `pyeverand` and its GUI command `pyeverand-gui` (were `everand-books`, `everand-books-gui`), and settings are named `PYEVERAND_*` (were `EVERAND_BOOKS_*`). Deliberate break: the `EVERAND_BOOKS_*` variables are no longer read, so rename them in any `.env` or container configuration. The older `EVERAND__*` and `HTTP__*` names still work. `.copier-answers.yml` keeps `project_name: everand-books`, because it is not edited by hand.
+
 ## Cookie setup from the GUI
 `AppOptions` holds the settings that need no cookies, so the GUI can start before they exist; `Settings` extends it. The GUI writes the two cookies into `.env` in the working directory, keeping other lines, and clears the settings cache. Real environment variables still take priority over `.env`.

@@ -3,10 +3,10 @@ from datetime import UTC, datetime
 
 import pytest
 
-from everand_books.adapters.epub.element import XmlElement
-from everand_books.adapters.epub.package import build_container_document, build_package_document
-from everand_books.domain import Book, BookChapter, Chapter, ImageFile, NavChapter, SectionKind
-from everand_books.errors import UnsupportedImageFormatError
+from pyeverand.adapters.epub.element import XmlElement
+from pyeverand.adapters.epub.package import build_container_document, build_package_document
+from pyeverand.domain import Book, BookChapter, Chapter, ImageFile, NavChapter, SectionKind
+from pyeverand.errors import UnsupportedImageFormatError
 
 
 MODIFIED = datetime(2026, 1, 2, 3, 4, 5, tzinfo=UTC)

@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from everand_books.domain import DownloadProgress, DownloadStatus, QueuedDownload
-from everand_books.interfaces.gui_view import (
+from pyeverand.domain import DownloadProgress, DownloadStatus, QueuedDownload
+from pyeverand.interfaces.gui_view import (
     ProgressDisplay,
     RequestView,
     RowView,

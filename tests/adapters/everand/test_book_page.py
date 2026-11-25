@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from everand_books.adapters.everand.book_page import parse_book_page
-from everand_books.domain import BookMetadata
-from everand_books.errors import BookNotAccessibleError, UnexpectedResponseError
+from pyeverand.adapters.everand.book_page import parse_book_page
+from pyeverand.domain import BookMetadata
+from pyeverand.errors import BookNotAccessibleError, UnexpectedResponseError
 
 
 CONTENT_ITEM: dict[str, object] = {

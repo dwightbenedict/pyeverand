@@ -3,15 +3,15 @@ import logging
 
 import pytest
 
-from everand_books.config import Settings, load_settings
-from everand_books.logging_config import configure_logging
+from pyeverand.config import Settings, load_settings
+from pyeverand.logging_config import configure_logging
 
 
 def _settings(monkeypatch: pytest.MonkeyPatch, **env: str) -> Settings:
     credentials = {"SESSION_TOKEN": "token", "USER_ID": "7"}
 
     for key, value in (credentials | env).items():
-        monkeypatch.setenv(f"EVERAND_BOOKS_{key}", value)
+        monkeypatch.setenv(f"PYEVERAND_{key}", value)
 
     return load_settings()
 

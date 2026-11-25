@@ -1,4 +1,4 @@
-# everand-books
+# pyeverand
 
 Download Everand books you can read and package them as EPUB files. Only books your account can read can be downloaded.
 
@@ -10,7 +10,7 @@ uv sync
 
 ## Use the app
 ```bash
-uv run everand-books-gui
+uv run pyeverand-gui
 ```
 This opens `http://127.0.0.1:8080` in your browser. Press Ctrl+C in the terminal to quit.
 
@@ -24,13 +24,13 @@ This opens `http://127.0.0.1:8080` in your browser. Press Ctrl+C in the terminal
 - The download list is cleared when you quit.
 - **Your cookies give access to your account, so do not share them.** They are saved in a `.env` file in the folder you start the app from.
 - The app can only be reached from your own computer and has no sign-in: anyone who can open it there can see your saved cookies.
-- If port 8080 is taken, set `EVERAND_BOOKS_GUI_PORT` to another one.
+- If port 8080 is taken, set `PYEVERAND_GUI_PORT` to another one.
 - The folder dialog needs Python with Tk, which some Linux systems install as a separate package.
 
 ## Command line
 Save the cookies in the app first, or copy `.env.example` to `.env` and fill them in.
 ```bash
-uv run python -m everand_books 696073235                       # saves to your Downloads folder
-uv run python -m everand_books 696073235 --output-dir ./books
+uv run python -m pyeverand 696073235                       # saves to your Downloads folder
+uv run python -m pyeverand 696073235 --output-dir ./books
 ```
 The number is the book's ID, found in its address: `everand.com/book/<number>/...`

@@ -1,6 +1,6 @@
 import pytest
 
-from everand_books.domain import (
+from pyeverand.domain import (
     Book,
     BookChapter,
     BookMetadata,

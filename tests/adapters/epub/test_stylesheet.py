@@ -1,4 +1,4 @@
-from everand_books.adapters.epub.stylesheet import render_stylesheet
+from pyeverand.adapters.epub.stylesheet import render_stylesheet
 
 
 def test_render_stylesheet_writes_one_rule_per_class() -> None:

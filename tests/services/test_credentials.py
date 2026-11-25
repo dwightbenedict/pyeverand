@@ -1,8 +1,8 @@
 import pytest
 
-from everand_books.domain import Credentials
-from everand_books.errors import InvalidCredentialsError
-from everand_books.services import SaveCredentialsService
+from pyeverand.domain import Credentials
+from pyeverand.errors import InvalidCredentialsError
+from pyeverand.services import SaveCredentialsService
 
 
 class FakeStore:

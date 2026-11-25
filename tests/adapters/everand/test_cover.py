@@ -3,8 +3,8 @@ from io import BytesIO
 import pytest
 from PIL import Image
 
-from everand_books.adapters.everand.cover import cover_as_jpeg
-from everand_books.errors import InvalidCoverImageError
+from pyeverand.adapters.everand.cover import cover_as_jpeg
+from pyeverand.errors import InvalidCoverImageError
 
 
 def png() -> bytes:

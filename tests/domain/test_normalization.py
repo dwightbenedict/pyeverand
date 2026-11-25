@@ -1,4 +1,4 @@
-from everand_books.domain import (
+from pyeverand.domain import (
     ListBlock,
     PageBreakBlock,
     TableBlock,
@@ -6,7 +6,7 @@ from everand_books.domain import (
     TextBlock,
     normalize_blocks,
 )
-from everand_books.domain.normalization import group_list_items
+from pyeverand.domain.normalization import group_list_items
 
 
 def bullet(level: int = 0) -> TextBlock:

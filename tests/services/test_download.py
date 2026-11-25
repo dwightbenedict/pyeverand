@@ -1,7 +1,7 @@
 from collections.abc import Mapping
 from pathlib import Path
 
-from everand_books.domain import (
+from pyeverand.domain import (
     Book,
     BookChapter,
     BookMetadata,
@@ -11,7 +11,7 @@ from everand_books.domain import (
     NavChapter,
     SectionKind,
 )
-from everand_books.services import DownloadBookService
+from pyeverand.services import DownloadBookService
 
 
 TOC = [NavChapter("One", SectionKind.BODYMATTER, 0), NavChapter("Two", SectionKind.BACKMATTER, 1)]

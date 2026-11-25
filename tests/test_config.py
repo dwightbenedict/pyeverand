@@ -1,12 +1,12 @@
 import pytest
 
-from everand_books.config import load_settings
+from pyeverand.config import load_settings
 
 
 def test_settings_read_prefixed_environment(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("EVERAND_BOOKS_SESSION_TOKEN", "token")
-    monkeypatch.setenv("EVERAND_BOOKS_USER_ID", "7")
-    monkeypatch.setenv("EVERAND_BOOKS_HTTP_MAX_ATTEMPTS", "5")
+    monkeypatch.setenv("PYEVERAND_SESSION_TOKEN", "token")
+    monkeypatch.setenv("PYEVERAND_USER_ID", "7")
+    monkeypatch.setenv("PYEVERAND_HTTP_MAX_ATTEMPTS", "5")
 
     settings = load_settings()
 
@@ -36,9 +36,9 @@ def test_settings_read_legacy_variable_names(monkeypatch: pytest.MonkeyPatch) ->
 
 
 def test_settings_reject_an_unknown_log_level(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("EVERAND_BOOKS_SESSION_TOKEN", "token")
-    monkeypatch.setenv("EVERAND_BOOKS_USER_ID", "7")
-    monkeypatch.setenv("EVERAND_BOOKS_LOG_LEVEL", "LOUD")
+    monkeypatch.setenv("PYEVERAND_SESSION_TOKEN", "token")
+    monkeypatch.setenv("PYEVERAND_USER_ID", "7")
+    monkeypatch.setenv("PYEVERAND_LOG_LEVEL", "LOUD")
 
-    with pytest.raises(ValueError, match="EVERAND_BOOKS_LOG_LEVEL"):
+    with pytest.raises(ValueError, match="PYEVERAND_LOG_LEVEL"):
         load_settings()

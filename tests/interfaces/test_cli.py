@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from everand_books.errors import BookNotFoundError
-from everand_books.interfaces import cli
+from pyeverand.errors import BookNotFoundError
+from pyeverand.interfaces import cli
 
 
 runner = CliRunner()
@@ -54,9 +54,9 @@ def test_download_missing_book_exits_one_with_message() -> None:
 
 def test_main_configures_logging_then_runs_the_app(monkeypatch: pytest.MonkeyPatch) -> None:
     levels: list[int] = []
-    monkeypatch.setenv("EVERAND_BOOKS_SESSION_TOKEN", "token")
-    monkeypatch.setenv("EVERAND_BOOKS_USER_ID", "7")
-    monkeypatch.setenv("EVERAND_BOOKS_LOG_LEVEL", "ERROR")
+    monkeypatch.setenv("PYEVERAND_SESSION_TOKEN", "token")
+    monkeypatch.setenv("PYEVERAND_USER_ID", "7")
+    monkeypatch.setenv("PYEVERAND_LOG_LEVEL", "ERROR")
     monkeypatch.setattr(cli, "app", lambda: levels.append(logging.getLogger().level))
     cli.main()
     assert levels == [logging.ERROR]

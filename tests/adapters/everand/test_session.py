@@ -4,8 +4,8 @@ from collections.abc import Callable
 import httpx
 import pytest
 
-from everand_books.adapters.everand import EverandSession, RequestPolicy
-from everand_books.errors import EverandRequestError
+from pyeverand.adapters.everand import EverandSession, RequestPolicy
+from pyeverand.errors import EverandRequestError
 
 
 type SessionFactory = Callable[[Callable[[httpx.Request], httpx.Response]], EverandSession]

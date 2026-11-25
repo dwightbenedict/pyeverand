@@ -3,7 +3,7 @@ from collections.abc import Callable
 import httpx
 import pytest
 
-from everand_books.adapters.everand import EverandSession, RequestPolicy
+from pyeverand.adapters.everand import EverandSession, RequestPolicy
 
 
 type Handler = Callable[[httpx.Request], httpx.Response]

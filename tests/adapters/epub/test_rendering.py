@@ -3,9 +3,9 @@ from typing import get_args
 import pytest
 from lxml import etree
 
-from everand_books.adapters.epub.element import XmlElement
-from everand_books.adapters.epub.rendering import render, render_chapter
-from everand_books.domain import (
+from pyeverand.adapters.epub.element import XmlElement
+from pyeverand.adapters.epub.rendering import render, render_chapter
+from pyeverand.domain import (
     BookChapter,
     BorderBlock,
     Chapter,
@@ -26,7 +26,7 @@ from everand_books.domain import (
     TextBlock,
     Word,
 )
-from everand_books.errors import UnsupportedBlockTypeError
+from pyeverand.errors import UnsupportedBlockTypeError
 
 
 EPUB_TYPE = "{http://www.idpf.org/2007/ops}type"

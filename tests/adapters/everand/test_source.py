@@ -3,9 +3,9 @@ from collections.abc import Callable
 import httpx
 import pytest
 
-from everand_books.adapters.everand import AccessTokenProvider, EverandBookSource, EverandSession
-from everand_books.domain import Chapter, NavChapter, PageBreakBlock, SectionKind
-from everand_books.errors import (
+from pyeverand.adapters.everand import AccessTokenProvider, EverandBookSource, EverandSession
+from pyeverand.domain import Chapter, NavChapter, PageBreakBlock, SectionKind
+from pyeverand.errors import (
     BookNotAccessibleError,
     BookNotFoundError,
     EverandRequestError,

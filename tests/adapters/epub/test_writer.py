@@ -7,9 +7,9 @@ from zipfile import ZIP_STORED, ZipFile
 import pytest
 from lxml import etree
 
-from everand_books.adapters.epub import ZipEpubWriter
-from everand_books.domain import Book
-from everand_books.errors import OutputWriteError
+from pyeverand.adapters.epub import ZipEpubWriter
+from pyeverand.domain import Book
+from pyeverand.errors import OutputWriteError
 
 
 def fixed_clock() -> datetime:
